@@ -30,7 +30,7 @@ public class CodeTypeServiceImpl extends ServiceImpl<CodeTypeMapper, CodeType> i
 
     public void createOne(CodeType codeType) {
         codeType.setStatu(1);
-        codeType.setCreated(LocalDate.now());
+        codeType.setCreated(OffsetDateTime.now());
         codeTypeMapper.insert(codeType);
 
         actionRecord.setActionName("Save");
@@ -43,7 +43,7 @@ public class CodeTypeServiceImpl extends ServiceImpl<CodeTypeMapper, CodeType> i
     }
 
     public void updateOne(CodeType codeType) {
-        codeType.setUpdated(LocalDate.now());
+        codeType.setUpdated(OffsetDateTime.now());
         codeTypeMapper.updateById(codeType);
 
         actionRecord.setActionName("Update");

@@ -27,7 +27,7 @@ public class VendorServiceImpl extends ServiceImpl<VendorMapper, Vendor> impleme
 
     public void createOne(Vendor vendor){
         vendor.setStatu(1);
-        vendor.setCreated(LocalDate.now());
+        vendor.setCreated(OffsetDateTime.now());
         vendorMapper.insert(vendor);
 
         actionRecord.setActionName("Save");
@@ -40,7 +40,7 @@ public class VendorServiceImpl extends ServiceImpl<VendorMapper, Vendor> impleme
     }
 
     public void updateOne(Vendor vendor){
-        vendor.setUpdated(LocalDate.now());
+        vendor.setUpdated(OffsetDateTime.now());
         vendorMapper.updateById(vendor);
 
         actionRecord.setActionName("Update");

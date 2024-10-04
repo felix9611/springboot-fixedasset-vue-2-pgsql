@@ -1,18 +1,14 @@
 package com.fixedasset.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fixedasset.entity.ActionRecord;
 import com.fixedasset.entity.TaxableCountry;
 import com.fixedasset.mapper.ActionRecordMapper;
 import com.fixedasset.mapper.TaxableCountryMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fixedasset.service.InvRecordService;
 import com.fixedasset.service.TaxableCountryService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -28,7 +24,7 @@ public class TaxableCountryServiceImpl extends ServiceImpl<TaxableCountryMapper,
     public String voidData(Long id) {
         taxableCountry.setId(id);
         taxableCountry.setStatu(0);
-        taxableCountry.setUpdated(LocalDate.now());
+        taxableCountry.setUpdated(OffsetDateTime.now());
         taxableCountryMapper.updateById(taxableCountry);
 
         actionRecord.setActionName("Void");
@@ -42,7 +38,7 @@ public class TaxableCountryServiceImpl extends ServiceImpl<TaxableCountryMapper,
         return  "This data was void" + taxableCountry;
     }
     public TaxableCountry createNew(TaxableCountry taxableCountry) {
-        taxableCountry.setCreated(LocalDate.now());
+        taxableCountry.setCreated(OffsetDateTime.now());
         taxableCountryMapper.insert(taxableCountry);
 
         actionRecord.setActionName("Save");
@@ -57,7 +53,7 @@ public class TaxableCountryServiceImpl extends ServiceImpl<TaxableCountryMapper,
     }
 
     public TaxableCountry update(TaxableCountry taxableCountry) {
-        taxableCountry.setUpdated(LocalDate.now());
+        taxableCountry.setUpdated(OffsetDateTime.now());
         taxableCountryMapper.updateById(taxableCountry);
 
         actionRecord.setActionName("Update");

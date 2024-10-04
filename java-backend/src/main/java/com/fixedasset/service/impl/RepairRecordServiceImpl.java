@@ -37,7 +37,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
 
 
     public void createNew(RepairRecord repairRecord) {
-        repairRecord.setCreated(LocalDate.now());
+        repairRecord.setCreated(OffsetDateTime.now());
         repairRecord.setStatus(1);
 
         repairRecordMapper.insert(repairRecord);
@@ -54,7 +54,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
    
 
     public void update(RepairRecord repairRecord) {
-        repairRecord.setUpdated(LocalDate.now());
+        repairRecord.setUpdated(OffsetDateTime.now());
 
         repairRecordMapper.updateById(repairRecord);
 
@@ -74,7 +74,7 @@ public class RepairRecordServiceImpl extends ServiceImpl<RepairRecordMapper, Rep
     public void voidRecord(Long id) {
         repairRecord.setId(id);
         repairRecord.setStatus(0);
-        repairRecord.setUpdated(LocalDate.now());
+        repairRecord.setUpdated(OffsetDateTime.now());
         repairRecordMapper.updateById(repairRecord);
         
 

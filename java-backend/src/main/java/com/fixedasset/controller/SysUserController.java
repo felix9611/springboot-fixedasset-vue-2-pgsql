@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.security.Principal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,7 +79,7 @@ public class SysUserController extends BaseController {
     @PreAuthorize("hasAuthority('sys:user:save')")
     public Result save(@Validated @RequestBody SysUser sysUser) {
 
-        sysUser.setCreated(LocalDate.now());
+        sysUser.setCreated(OffsetDateTime.now());
         sysUser.setStatu(Const.STATUS_ON);
 
         String password = passwordEncoder.encode(Const.DEFULT_PASSWORD);
@@ -95,7 +95,7 @@ public class SysUserController extends BaseController {
     @PreAuthorize("hasAuthority('sys:user:update')")
     public Result update(@Validated @RequestBody SysUser sysUser) {
 
-        sysUser.setUpdated(LocalDate.now());
+        sysUser.setUpdated(OffsetDateTime.now());
 
         sysUserService.updateById(sysUser);
         return Result.succ(sysUser);
@@ -154,7 +154,7 @@ public class SysUserController extends BaseController {
         SysUser sysUser = sysUserService.getById(userId);
 
         sysUser.setPassword(passwordEncoder.encode(Const.DEFULT_PASSWORD));
-        sysUser.setUpdated(LocalDate.now());
+        sysUser.setUpdated(OffsetDateTime.now());
 
         sysUserService.updateById(sysUser);
         return Result.succ("");
@@ -162,7 +162,7 @@ public class SysUserController extends BaseController {
 
     @PutMapping("/updateIcon")
     public Result repass(@RequestBody SysUser sysUser) {
-        sysUser.setUpdated(LocalDate.now());
+        sysUser.setUpdated(OffsetDateTime.now());
         sysUserService.updateById(sysUser);
         return Result.succ(sysUser);
     }
@@ -178,7 +178,7 @@ public class SysUserController extends BaseController {
         }
 
         sysUser.setPassword(passwordEncoder.encode(passDto.getPassword()));
-        sysUser.setUpdated(LocalDate.now());
+        sysUser.setUpdated(OffsetDateTime.now());
 
         sysUserService.updateById(sysUser);
         return Result.succ("");

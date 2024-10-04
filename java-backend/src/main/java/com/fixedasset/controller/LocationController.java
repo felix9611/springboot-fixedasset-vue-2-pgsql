@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @RestController
 @RequestMapping("/base/location")
@@ -27,7 +27,7 @@ public class LocationController extends BaseController {
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('base:dept:create')")
     public Result create(@RequestBody Location location) {
-        location.setCreated(LocalDate.now());
+        location.setCreated(OffsetDateTime.now());
         location.setStatu(1);
         locationService.createNew(location);
         return Result.succ(location);
@@ -36,7 +36,7 @@ public class LocationController extends BaseController {
     @PostMapping("/update")
     // @PreAuthorize("hasAuthority('base:dept:update')")
     public Result update(@RequestBody Location location) {
-        location.setUpdated(LocalDate.now());
+        location.setUpdated(OffsetDateTime.now());
         locationService.update(location);
         return Result.succ(location);
     }
@@ -45,7 +45,7 @@ public class LocationController extends BaseController {
     public Result remove(@PathVariable("id") Long id) {
         Location location = new Location();
         location.setId(id);
-        location.setUpdated(LocalDate.now());
+        location.setUpdated(OffsetDateTime.now());
         location.setStatu(0);
         locationService.remove(location);
         return Result.succ(id);

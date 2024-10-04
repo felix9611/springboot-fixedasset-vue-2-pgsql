@@ -14,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -63,7 +63,7 @@ public class SysMenuController extends BaseController {
     @PreAuthorize("hasAuthority('sys:menu:save')")
     public Result save(@Validated @RequestBody SysMenu sysMenu) {
 
-        sysMenu.setCreated(LocalDate.now());
+        sysMenu.setCreated(OffsetDateTime.now());
         sysMenu.setStatu(1);
         sysMenuService.save(sysMenu);
         return Result.succ(sysMenu);
@@ -73,7 +73,7 @@ public class SysMenuController extends BaseController {
     @PreAuthorize("hasAuthority('sys:menu:update')")
     public Result update(@Validated @RequestBody SysMenu sysMenu) {
 
-        sysMenu.setUpdated(LocalDate.now());
+        sysMenu.setUpdated(OffsetDateTime.now());
 
         sysMenuService.updateById(sysMenu);
 

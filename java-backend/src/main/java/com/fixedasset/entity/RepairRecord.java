@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Transient;
 @Data
@@ -29,13 +29,13 @@ public class RepairRecord {
     private String maintenanceName;
 
     @TableField("maintenance_date")
-    private LocalDate maintenanceDate;
+    private OffsetDateTime maintenanceDate;
 
     @TableField("maintenance_finish_date")
-    private LocalDate maintenanceFinishDate;
+    private OffsetDateTime maintenanceFinishDate;
 
     @TableField("repair_invoice_date")
-    private LocalDate repairInvoiceDate;
+    private OffsetDateTime repairInvoiceDate;
 
     @TableField("repair_invoice_no")
     private String repairInvoiceNo;
@@ -47,10 +47,10 @@ public class RepairRecord {
     private String remark;
 
     @TableField("created")
-    private LocalDate created;
+    private OffsetDateTime created;
 
     @TableField("updated")
-    private LocalDate updated;
+    private OffsetDateTime updated;
 
     @TableField("status")
     private int status;
@@ -68,8 +68,8 @@ public class RepairRecord {
     private String  assetName;
 
     @TableField(exist = false)
-    private LocalDate repairInvoiceDateTo;
+    private OffsetDateTime repairInvoiceDateTo;
 
     @TableField(exist = false)
-    private LocalDate repairInvoiceDateFrom;
+    private OffsetDateTime repairInvoiceDateFrom;
 }

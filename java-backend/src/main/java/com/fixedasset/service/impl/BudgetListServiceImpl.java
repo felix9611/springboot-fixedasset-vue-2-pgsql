@@ -7,7 +7,7 @@ import com.fixedasset.service.BudgetListService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Service
 public class BudgetListServiceImpl extends ServiceImpl<BudgetListMapper, BudgetList> implements BudgetListService {
@@ -17,7 +17,7 @@ public class BudgetListServiceImpl extends ServiceImpl<BudgetListMapper, BudgetL
 
     public void create(BudgetList budgetList) {
         budgetList.setStatu(1);
-        budgetList.setCreated(LocalDate.now());
+        budgetList.setCreated(OffsetDateTime.now());
         budgetListMapper.insert(budgetList);
     }
 
@@ -28,7 +28,7 @@ public class BudgetListServiceImpl extends ServiceImpl<BudgetListMapper, BudgetL
     }
 
     public void update(BudgetList budgetList) {
-        budgetList.setUpdated(LocalDate.now());
+        budgetList.setUpdated(OffsetDateTime.now());
         budgetListMapper.updateById(budgetList);
     }
 

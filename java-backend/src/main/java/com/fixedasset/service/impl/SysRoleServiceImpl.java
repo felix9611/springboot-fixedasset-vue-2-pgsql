@@ -34,7 +34,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public String voidById(Long id) {
         sysRole.setId(id);
         sysRole.setStatu(0);
-        sysRole.setUpdated(LocalDate.now());
+        sysRole.setUpdated(OffsetDateTime.now());
         sysRoleMapper.updateById(sysRole);
 
         actionRecord.setActionName("Delete Role");

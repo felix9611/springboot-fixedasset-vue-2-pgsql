@@ -44,7 +44,7 @@ public class InvRecordServiceImpl extends ServiceImpl<InvRecordMapper, InvRecord
             invRecord.setPlaceFrom(oldAssetRecord.getPlaceId());
             invRecord.setPlaceTo(newPlaceId);
             invRecord.setStatu(1);
-            invRecord.setCreated(LocalDate.now());
+            invRecord.setCreated(OffsetDateTime.now());
 
             invRecordMapper.insert(invRecord);
 
@@ -64,7 +64,7 @@ public class InvRecordServiceImpl extends ServiceImpl<InvRecordMapper, InvRecord
         invRecord.setPlaceFrom(0);
         invRecord.setPlaceTo(placeId);
         invRecord.setStatu(1);
-        invRecord.setCreated(LocalDate.now());
+        invRecord.setCreated(OffsetDateTime.now());
 
         invRecordMapper.insert(invRecord);
 
@@ -84,7 +84,7 @@ public class InvRecordServiceImpl extends ServiceImpl<InvRecordMapper, InvRecord
         invRecord.setPlaceFrom(placeId);
         invRecord.setPlaceTo(0);
         invRecord.setStatu(0);
-        invRecord.setCreated(LocalDate.now());
+        invRecord.setCreated(OffsetDateTime.now());
 
         invRecordMapper.insert(invRecord);
 

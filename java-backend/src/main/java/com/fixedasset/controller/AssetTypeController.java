@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @RestController
 @RequestMapping("/base/asset_type")
@@ -38,7 +38,7 @@ public class AssetTypeController extends BaseController {
 
     @PostMapping("/create")
     public Result create(@RequestBody AssetType assetType) {
-        assetType.setCreated(LocalDate.now());
+        assetType.setCreated(OffsetDateTime.now());
         assetType.setStatu(1);
         assetTypeService.save(assetType);
         return Result.succ(assetType);
@@ -50,14 +50,14 @@ public class AssetTypeController extends BaseController {
 
     @PostMapping("/update")
     public Result update(@RequestBody AssetType assetType) {
-        assetType.setUpdated(LocalDate.now());
+        assetType.setUpdated(OffsetDateTime.now());
         assetTypeService.updateById(assetType);
         return Result.succ(assetType);
     }
     @DeleteMapping("/remove/{id}")
     public Result remove(@PathVariable("id") Long id) {
         AssetType assetType = new AssetType();
-        assetType.setUpdated(LocalDate.now());
+        assetType.setUpdated(OffsetDateTime.now());
         assetType.setId(id);
         assetType.setStatu(0);
         assetTypeService.remove(assetType);

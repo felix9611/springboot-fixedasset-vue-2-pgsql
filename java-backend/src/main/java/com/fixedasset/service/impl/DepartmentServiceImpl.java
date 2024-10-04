@@ -36,6 +36,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         actionRecord.setCreated(OffsetDateTime.now());
         this.createdAction(actionRecord);
 
+        department.setCreated(OffsetDateTime.now());
         departmentMapper.insert(department);
     }
 
@@ -59,6 +60,8 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         actionRecord.setActionSuccess("Success");
         actionRecord.setCreated(OffsetDateTime.now());
         this.createdAction(actionRecord);
+
+        department.setUpdated(OffsetDateTime.now());
 
         departmentMapper.updateById(department);
     }

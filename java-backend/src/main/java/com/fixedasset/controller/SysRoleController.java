@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +59,7 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("hasAuthority('sys:role:save')")
     public Result save(@Validated @RequestBody SysRole sysRole) {
 
-        sysRole.setCreated(LocalDate.now());
+        sysRole.setCreated(OffsetDateTime.now());
         sysRole.setStatu(Const.STATUS_ON);
 
         sysRoleService.createNewRole(sysRole);
@@ -71,7 +71,7 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("hasAuthority('sys:role:update')")
     public Result update(@Validated @RequestBody SysRole sysRole) {
 
-        sysRole.setUpdated(LocalDate.now());
+        sysRole.setUpdated(OffsetDateTime.now());
 
         sysRoleService.updateRole(sysRole);
 

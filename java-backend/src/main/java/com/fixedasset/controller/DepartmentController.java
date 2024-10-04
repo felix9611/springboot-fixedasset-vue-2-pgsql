@@ -24,7 +24,6 @@ public class DepartmentController {
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('base:dept:create')")
     public Result create(@RequestBody Department department) {
-        department.setCreated(LocalDate.now());
         department.setStatu(1);
         departmentService.createNew(department);
         return Result.succ(department);
@@ -33,7 +32,6 @@ public class DepartmentController {
     @PostMapping("/update")
     // @PreAuthorize("hasAuthority('base:dept:update')")
     public Result update(@RequestBody Department department) {
-        department.setUpdated(LocalDate.now());
         departmentService.update(department);
         return Result.succ(department);
     }
@@ -42,7 +40,6 @@ public class DepartmentController {
     // @PreAuthorize("hasAuthority('base:dept:remove')")
     public Result remove(@PathVariable("id") Long id) {
         Department department = new Department();
-        department.setUpdated(LocalDate.now());
         department.setId(id);
         department.setStatu(0);
         log.debug(department.toString());

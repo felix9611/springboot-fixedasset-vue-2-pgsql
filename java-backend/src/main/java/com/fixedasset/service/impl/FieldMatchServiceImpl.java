@@ -11,7 +11,6 @@ import com.fixedasset.service.FieldMatchService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 @Service
@@ -50,7 +49,7 @@ public class FieldMatchServiceImpl extends ServiceImpl<FieldMatchMapper, FieldMa
         actionRecord.setCreated(OffsetDateTime.now());
         this.createdAction(actionRecord);
 
-        fieldMatch.setCreated(LocalDate.now());
+        fieldMatch.setCreated(OffsetDateTime.now());
         fieldMatch.setStatu(1);
         fieldMatchMapper.insert(fieldMatch);
     }
@@ -65,7 +64,7 @@ public class FieldMatchServiceImpl extends ServiceImpl<FieldMatchMapper, FieldMa
         actionRecord.setCreated(OffsetDateTime.now());
         this.createdAction(actionRecord);
 
-        fieldMatch.setCreated(LocalDate.now());
+        fieldMatch.setCreated(OffsetDateTime.now());
         fieldMatch.setStatu(1);
         fieldMatchMapper.insert(fieldMatch);
     }
@@ -80,7 +79,7 @@ public class FieldMatchServiceImpl extends ServiceImpl<FieldMatchMapper, FieldMa
         actionRecord.setCreated(OffsetDateTime.now());
         this.createdAction(actionRecord);
 
-        fieldMatch.setUpdated(LocalDate.now());
+        fieldMatch.setUpdated(OffsetDateTime.now());
         fieldMatchMapper.updateById(fieldMatch);
     }
 

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Component
 @Data
@@ -21,10 +21,10 @@ public class BudgetList extends BaseEntity{
     private int budgetAmount;
 
     @TableField("budget_from")
-    private LocalDate budgetFrom;
+    private OffsetDateTime budgetFrom;
 
     @TableField("budget_to")
-    private LocalDate budgetTo;
+    private OffsetDateTime budgetTo;
 
     @TableField("budget_status")
     private String budgetStatus;

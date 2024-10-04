@@ -29,7 +29,7 @@ public class StockTakeServiceImpl extends ServiceImpl<StockTakeMapper, StockTake
 
     public void create(StockTake stockTake) {
         stockTake.setActive(1);
-        stockTake.setCreatedTime(LocalDate.now());
+        stockTake.setCreatedTime(OffsetDateTime.now());
         stockTakeMapper.insert(stockTake);
 
         actionRecord.setActionName("Save");
@@ -70,7 +70,7 @@ public class StockTakeServiceImpl extends ServiceImpl<StockTakeMapper, StockTake
     public void finish(Long id) {
         stockTake.setId(id);
         stockTake.setActive(2);
-        stockTake.setFinishTime(LocalDate.now());
+        stockTake.setFinishTime(OffsetDateTime.now());
         stockTakeMapper.updateById(stockTake);
 
         actionRecord.setActionName("Finish Stock take");

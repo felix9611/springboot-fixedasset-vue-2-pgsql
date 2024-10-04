@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 // import org.springframework.data.annotation.Transient;
 import javax.persistence.Transient;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -25,5 +25,5 @@ public class AssetListViewDTO extends AssetList {
 
     @Transient private String writeOffReason;
 
-    @Transient private LocalDate writeOffTime;
+    @Transient private OffsetDateTime writeOffTime;
 }

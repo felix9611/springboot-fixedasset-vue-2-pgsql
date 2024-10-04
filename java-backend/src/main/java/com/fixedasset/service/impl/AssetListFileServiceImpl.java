@@ -32,7 +32,7 @@ public class AssetListFileServiceImpl extends ServiceImpl<AssetListFileMapper, A
     public void saveListPicture(AssetListFile assetListFile){
 
         assetListFile.setStatu(1);
-        assetListFile.setCreated(LocalDate.now());
+        assetListFile.setCreated(OffsetDateTime.now());
         assetListFileMapper.insert(assetListFile);
 
         actionRecord.setActionName("Add");

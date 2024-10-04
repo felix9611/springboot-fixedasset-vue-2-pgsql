@@ -9,7 +9,7 @@ import com.fixedasset.service.FormJsonService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Service
 public class FormJsonServiceImpl extends ServiceImpl<FormJsonMapper, FormJson> implements FormJsonService {
@@ -18,7 +18,7 @@ public class FormJsonServiceImpl extends ServiceImpl<FormJsonMapper, FormJson> i
     @Resource private FormJson formJson;
 
     public void create(FormJson formJson) {
-        formJson.setCreated(LocalDate.now());
+        formJson.setCreated(OffsetDateTime.now());
         formJson.setStatu(1);
 
         formJsonMapper.insert(formJson);
@@ -29,7 +29,7 @@ public class FormJsonServiceImpl extends ServiceImpl<FormJsonMapper, FormJson> i
     }
 
     public void update(FormJson formJson) {
-        formJson.setUpdated(LocalDate.now());
+        formJson.setUpdated(OffsetDateTime.now());
         formJsonMapper.updateById(formJson);
     }
 

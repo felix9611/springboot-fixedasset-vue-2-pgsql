@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fixedasset.dto.StockTakeFormListDTO;
 import com.fixedasset.dto.StockTakeItemListDTO;
 import com.fixedasset.entity.ActionRecord;
 import com.fixedasset.entity.AssetList;
@@ -15,14 +14,11 @@ import com.fixedasset.mapper.StockTakeItemMapper;
 import com.fixedasset.mapper.StockTakeMapper;
 import com.fixedasset.service.AssetListService;
 import com.fixedasset.service.StockTakeItemService;
-import com.fixedasset.service.StockTakeService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 @Service
 public class StockTakeItemServiceImpl extends ServiceImpl<StockTakeItemMapper, StockTakeItem> implements StockTakeItemService {
@@ -76,7 +72,7 @@ public class StockTakeItemServiceImpl extends ServiceImpl<StockTakeItemMapper, S
             }
 
             stockTakeItem.setAssetId(Math.toIntExact(assetListRes.getId()));
-            stockTakeItem.setCheckTime(LocalDate.now());
+            stockTakeItem.setCheckTime(OffsetDateTime.now());
             stockTakeItemMapper.insert(stockTakeItem);
 
             actionRecord.setActionName("Save");

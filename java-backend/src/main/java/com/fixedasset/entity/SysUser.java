@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class SysUser extends BaseEntity {
 
     private String city;
 
-    private LocalDate lastLogin;
+    private OffsetDateTime lastLogin;
 
     @TableField(exist = false)
     private List<SysRole> sysRoles = new ArrayList<>();

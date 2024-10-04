@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Component
 @Data
@@ -32,7 +32,7 @@ public class StockTakeItem implements Serializable {
     private String status;
 
     @TableField("check_time")
-    private LocalDate checkTime;
+    private OffsetDateTime checkTime;
 
     @TableField("remark")
     private String remark;

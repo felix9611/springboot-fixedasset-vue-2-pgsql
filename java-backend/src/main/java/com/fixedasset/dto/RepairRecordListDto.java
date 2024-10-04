@@ -1,6 +1,6 @@
 package com.fixedasset.dto;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import javax.persistence.Transient;
@@ -23,11 +23,11 @@ public class RepairRecordListDto extends RepairRecord{
 
     @Transient private String maintenanceName;
 
-    @Transient private LocalDate maintenanceDate;
+    @Transient private OffsetDateTime maintenanceDate;
 
-    @Transient private LocalDate maintenanceFinishDate;
+    @Transient private OffsetDateTime maintenanceFinishDate;
 
-    @Transient private LocalDate repairInvoiceDate;
+    @Transient private OffsetDateTime repairInvoiceDate;
 
     @Transient private String repairInvoiceNo;
 
@@ -35,7 +35,7 @@ public class RepairRecordListDto extends RepairRecord{
 
     @Transient private String remark;
 
-    @Transient private LocalDate created;
+    @Transient private OffsetDateTime created;
 
-    @Transient private LocalDate updated;
+    @Transient private OffsetDateTime updated;
 }

@@ -113,7 +113,7 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         String newCode = this.getNewAssetCode();
         assetList.setAssetCode(newCode);
         assetList.setStatu(1);
-        assetList.setCreated(LocalDate.now());
+        assetList.setCreated(OffsetDateTime.now());
 
         assetListMapper.insert(assetList);
 
@@ -143,7 +143,7 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         int assetId = (int)oldId;
         invRecordService.saveRecord(assetId, assetList.getPlaceId());
 
-        assetList.setUpdated(LocalDate.now());
+        assetList.setUpdated(OffsetDateTime.now());
 
         List<AssetListFile> newAssetListFiles = assetList.getNewAssetListFiles();
 

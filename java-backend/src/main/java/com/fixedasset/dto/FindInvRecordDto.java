@@ -4,19 +4,19 @@ import com.fixedasset.entity.InvRecord;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
 public class FindInvRecordDto extends InvRecord {
-    private LocalDate createdTo;
-    private LocalDate createdFrom;
+    private OffsetDateTime createdTo;
+    private OffsetDateTime createdFrom;
 
-    public LocalDate getCreatedFrom() {
+    public OffsetDateTime getCreatedFrom() {
         return createdFrom;
     }
 
-    public LocalDate getCreatedTo() {
+    public OffsetDateTime getCreatedTo() {
         return createdTo;
     }
 }

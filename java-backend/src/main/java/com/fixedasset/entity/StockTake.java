@@ -8,7 +8,7 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Component
 @Data
@@ -24,10 +24,10 @@ public class StockTake implements Serializable {
     private int actionPlace;
 
     @TableField("created_time")
-    private LocalDate createdTime;
+    private OffsetDateTime createdTime;
 
     @TableField("finish_time")
-    private LocalDate finishTime;
+    private OffsetDateTime finishTime;
 
     @TableField("active")
     private int active;
