@@ -38,7 +38,7 @@ public interface AssetListMapper extends BaseMapper<AssetList> {
             "FROM asset_list as al " +
             "left join department as d on al.dept_id = d.id " +
             "where al.statu = 1 and al.sponsor = 0 and al.sponsor_name is null " +
-            "group by al.dept_id;";
+            "group by d.dept_name;";
 
     @Select(wrapperSql)
     Page<AssetListViewDTO> page(Page page, @Param("ew") Wrapper queryWrapper);
@@ -61,32 +61,32 @@ public interface AssetListMapper extends BaseMapper<AssetList> {
     @Select(costWithDept)
     List<CostWithDeptDto> getCostWithDept();
 
-    String assetYearCostDeptFindQuery  = "SELECT SUM(CAST(cost AS integer)) as costs, CONCAT(YEAR(asset_list.buy_date), '-', MONTH(asset_list.buy_date)) AS yearMonth, " +
+    String assetYearCostDeptFindQuery  = "SELECT SUM(CAST(cost AS integer)) as costs, CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) AS yearMonth, " +
             "dept.dept_name as deptName " +
             "FROM asset_list  " +
             "left join department as dept on asset_list.dept_id = dept.id " +
             " ${ew.customSqlSegment} " +
-            "group by CONCAT(YEAR(buy_date), '-', MONTH(buy_date)), dept_id  " +
-            "order by CONCAT(YEAR(buy_date), '-', MONTH(buy_date)), dept_id";
+            "group by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)), dept.dept_name  " +
+            "order by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)), dept.dept_name";
     @Select(assetYearCostDeptFindQuery)
     List<AssetYearCostDept> assetYearCostDeptFind(@Param("ew") Wrapper queryWrapper);
 
     String getItemYearMonthFind = "SELECT " +
             "count(*) as items," +
-            "CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) AS yearMonth " +
+            "CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) AS yearMonth " +
             "FROM asset_list " +  // where buy_date is not null and not(cost = 0) and  asset_list.statu = 1 " +
             " ${ew.customSqlSegment} " +
-            "group by CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) " +
-            "order by CONCAT(YEAR(buy_date), '-', MONTH(buy_date))  ASC;";
+            "group by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) " +
+            "order by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date))  ASC;";
     @Select(getItemYearMonthFind)
     List<AssetItemYearMonthDto> getItemYearMonthFind(@Param("ew") Wrapper queryWrapper);
 
-    String assetYearCostTypeFindQuery = "SELECT SUM(CAST(cost AS integer)) as costs,CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) AS yearMonth , at.type_name as typeName\n" +
+    String assetYearCostTypeFindQuery = "SELECT SUM(CAST(cost AS integer)) as costs,CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) AS yearMonth , at.type_name as typeName\n" +
             "FROM asset_list " +
             "left join asset_type as at on asset_list.type_id = at.id " +
             " ${ew.customSqlSegment} " +
-            "group by CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) , type_id " +
-            "order by CONCAT(YEAR(buy_date), '-', MONTH(buy_date))  ASC;";
+            "group by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) , at.type_name " +
+            "order by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date))  ASC;";
 
     @Select(assetYearCostTypeFindQuery)
     List<AssetYearCostType> assetYearCostTypeFind(@Param("ew") Wrapper queryWrapper);
@@ -95,7 +95,7 @@ public interface AssetListMapper extends BaseMapper<AssetList> {
             "FROM asset_list as al " +
             "left join asset_type as at on al.type_id = at.id " +
             " ${ew.customSqlSegment} " +
-            "group by type_id;";
+            "group by at.type_name;";
     @Select(groupByTypeFind)
     List<GroupByAssetOfTypeDto>  groupByTypeFind(@Param("ew") Wrapper queryWrapper);
 
@@ -103,48 +103,48 @@ public interface AssetListMapper extends BaseMapper<AssetList> {
             "FROM asset_list as al " +
             "left join location as loc on al.place_id = loc.id " +
             " ${ew.customSqlSegment} " +
-            "group by al.place_id;";
+            "group by loc.place_name;";
     @Select(groupByPlaceFind)
     List<AssetGroupPlaceDto> getAssetGroupPlaceFind(@Param("ew") Wrapper queryWrapper);
-    String assetYearQtyTypeQueryFind = "SELECT count(*) as items,CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) AS yearMonth , at.type_name as typeName " +
+    String assetYearQtyTypeQueryFind = "SELECT count(*) as items,CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) AS yearMonth , at.type_name as typeName " +
             "FROM asset_list " +
             "left join asset_type as at on asset_list.type_id = at.id " +
             " ${ew.customSqlSegment} " +
-            "group by CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) , type_id " +
-            "order by CONCAT(YEAR(buy_date), '-', MONTH(buy_date))  ASC;";
+            "group by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) , at.type_name " +
+            "order by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date))  ASC;";
 
     @Select(assetYearQtyTypeQueryFind)
     List<AssetYearQtyType> getAssetYearQtyTypeFind(@Param("ew") Wrapper queryWrapper);
 
-    String assetYearQtyDeptQueryFind = "SELECT count(*) as items,CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) AS yearMonth , dept.dept_name as deptName " +
+    String assetYearQtyDeptQueryFind = "SELECT count(*) as items,CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) AS yearMonth , dept.dept_name as deptName " +
             "FROM asset_list " +
             "left join department as dept on asset_list.dept_id = dept.id " +
             " ${ew.customSqlSegment} " +
-            "group by CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) , dept_id " +
-            "order by CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) ASC;";
+            "group by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) , dept.dept_name " +
+            "order by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) ASC;";
 
     @Select(assetYearQtyDeptQueryFind)
     List<AssetYearQtyDept> getAssetYearQtyDeptFind(@Param("ew") Wrapper queryWrapper);
 
 
-    String AssetCostYearMonth = "SELECT SUM(CAST(cost AS integer)) as costs ,CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) as yearMonth FROM asset_list " +
+    String AssetCostYearMonth = "SELECT SUM(CAST(cost AS integer)) as costs ,CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) as yearMonth FROM asset_list " +
             " ${ew.customSqlSegment} " +
-            "group by CONCAT(YEAR(buy_date), '-', MONTH(buy_date)) " +
-            "order by CONCAT(YEAR(buy_date), '-', MONTH(buy_date));";
+            "group by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) " +
+            "order by CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date));";
     @Select(AssetCostYearMonth)
     List<AssetCostYearMonthDto> getAssetCostYearMonthFind(@Param("ew") Wrapper queryWrapper);
 
-    String assetYearQtyPlaceQueryFind = "SELECT count(*) as items, location.place_name as placeName , YEAR(buy_date) as years, MONTH(buy_date) as months " +
+    String assetYearQtyPlaceQueryFind = "SELECT count(*) as items, location.place_name as placeName , date_part('YEAR', asset_list.buy_date) as years, date_part('MONTH', asset_list.buy_date) as months " +
             "FROM asset_list " +
             "left join location on asset_list .place_id = location.id " +
-            " ${ew.customSqlSegment} group by location.place_name, YEAR(buy_date), MONTH(buy_date) order by YEAR(buy_date), MONTH(buy_date)";
+            " ${ew.customSqlSegment} group by location.place_name, date_part('YEAR', asset_list.buy_date), date_part('MONTH', asset_list.buy_date) order by date_part('YEAR', asset_list.buy_date), date_part('MONTH', asset_list.buy_date)";
     @Select(assetYearQtyPlaceQueryFind)
     List<AssetYearQtyPlaceDto> getAssetYearQtyPlaceFind(@Param("ew") Wrapper queryWrapper);
 
-    String assetYearCostPlaceQueryFind = "SELECT SUM(CAST(cost AS integer)) as costs, location.place_name as placeName , YEAR(buy_date) as years, MONTH(buy_date) as months " +
+    String assetYearCostPlaceQueryFind = "SELECT SUM(CAST(cost AS integer)) as costs, location.place_name as placeName , date_part('YEAR', asset_list.buy_date) as years, date_part('MONTH', asset_list.buy_date) as months " +
             "FROM asset_list " +
             "left join location on asset_list .place_id = location.id " +
-            " ${ew.customSqlSegment} group by location.place_name, YEAR(buy_date), MONTH(buy_date) order by YEAR(buy_date), MONTH(buy_date)";
+            " ${ew.customSqlSegment} group by location.place_name, date_part('YEAR', asset_list.buy_date), date_part('MONTH', asset_list.buy_date) order by date_part('YEAR', asset_list.buy_date), date_part('MONTH', asset_list.buy_date)";
     @Select(assetYearCostPlaceQueryFind)
     List<AssetYearQtyPlaceDto> getAssetYearCostPlaceFind(@Param("ew") Wrapper queryWrapper);
 
