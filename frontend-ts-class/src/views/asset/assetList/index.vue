@@ -1,15 +1,9 @@
 <template>
-    <div class="container">
+    <div class="w-full bg-white p-[1rem]">
         <div class="handle-box">
-            
-            <el-row :gutter="24">
-                <el-col :span="4">
-                    <v-card
-                        class="mgb20-score"
-                        max-width="500"
-                    >
-                        <div class="card-content-score">
-                            <div style="text-align: center;font-size: 1.5rem;color: midnightblue;">
+            <div class="grid lg:grid-cols-5 gap-2">
+                <div class="mgb20-score card-content-score rounded-xl">
+                    <div style="text-align: center;font-size: 1.5rem;color: midnightblue;">
                                 Total
                             </div>
                             <div style="text-align: center;padding-top: 10%;font-size: 1.5rem;color: midnightblue;">
@@ -17,29 +11,23 @@
                             </div>
                             <div style="text-align: center;padding-top: 10%;font-size: 1.5rem;color: midnightblue;">
                                 HKD ${{ sumTotal }}
-                            </div>    
-                        </div>
-                    </v-card>
-                </el-col>
-                <el-col :span="4">
-                     <v-card
-                        class="mgb20-score"
-                        max-width="500"
-                    >
-                        <div class="card-content-score">
-                            <div style="text-align: center;font-size: 1.5rem;color: midnightblue;">
-                                Total with Sponsor
+                            </div>
+                </div>
+                <div class="mgb20-score card-content-score rounded-xl">
+                    <div style="text-align: center;font-size: 1.5rem;color: midnightblue;">
+                        Total with Sponsor
                             </div>
                             <div style="text-align: center;padding-top: 10%;font-size: 1.5rem;color: midnightblue;">
-                                Used Cost 
+                                Used Cost
                             </div>
                             <div style="text-align: center;padding-top: 10%;font-size: 1.5rem;color: midnightblue;">
                                 HKD ${{ sumTotalWithSponsor }}
-                            </div>    
-                        </div>
-                    </v-card> 
-                </el-col>
-            </el-row>
+                            </div>
+                </div>
+            </div>
+        </div>
+        <div class="handle-box">
+            <el-button type="primary" @click="goToCreate()">New Create</el-button>
         </div>
         <div class="handle-box">
             <el-form :inline="true">
@@ -96,16 +84,7 @@
 
                 <el-form-item>
                     <el-button @click="assetAllList">Find</el-button>
-                </el-form-item>
-
-                <!--<el-form-item>
-                    <el-button type="primary" @click="dialogVisible = true">Create</el-button>
-                </el-form-item> -->
-                <el-form-item>
-                    <el-button type="primary" @click="goToCreate()">New Create</el-button>
-                </el-form-item>
-
-                
+                </el-form-item>      
             </el-form>
         </div>
 
@@ -325,16 +304,16 @@
 
         <el-dialog
                 title="Update Form"
+                custom-class="xs:min-w-[400px]  sm:min-w-[500px] md:min-w-[600px]  lg:min-w-[1400px]"
                 :visible.sync="editDialog"
-                width="1600px"
                 :before-close="closeEditDialogDialog">
                 <DetailEdit :id="editId" />
         </el-dialog>
 
         <el-dialog
                 title="Create Form"
+                custom-class="xs:min-w-[400px] sm:min-w-[500px] md:min-w-[600px]  lg:min-w-[1400px]"
                 :visible.sync="createDialog"
-                width="1600px"
                 :before-close="closeCreateDialogDialog">
                 <DetailEdit />
         </el-dialog>

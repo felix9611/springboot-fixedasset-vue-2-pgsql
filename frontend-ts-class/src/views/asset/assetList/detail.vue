@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full bg-white">
+  <div class="bg-white w-full">
     <div class="handle-box p-2">
         <el-button icon="el-icon-circle-plus" circle v-if="readonlyForm === true" @click="startEdit()"></el-button>
     </div>
@@ -17,7 +17,7 @@
         </div>
       </div>
     </div>
-    <el-form :model="editForm" ref="editForm" :disabled="readonlyForm"  class="grid sm:lg:grid-cols-1 lg:grid-cols-4 p-3">
+    <el-form :model="editForm" ref="editForm" :disabled="readonlyForm"  class="grid sm:lg:grid-cols-1 lg:grid-cols-3 xl:grid-cols-2 gap-3 p-1">
       <el-form-item class="lg:col-span-4 px-8">
         <el-upload
               class="upload-demo"
@@ -33,7 +33,7 @@
       <el-form-item label="Asset Code"  prop="assetCode" label-width="120px">
         <el-input v-model="editForm.assetCode" autocomplete="off" readonly></el-input>
       </el-form-item>
-      <el-form-item label="Asset Name"  prop="assetName" label-width="120px" class="lg:col-span-3">
+      <el-form-item label="Asset Name"  prop="assetName" label-width="120px" class="lg:col-span-1">
         <el-input v-model="editForm.assetName" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="Type" prop="type" label-width="120px">

@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="w-full bg-white p-3">
         <div class="handle-box">
             <el-form :inline="true">
                 <el-form-item>
@@ -119,14 +119,28 @@
                 <el-button type="primary" @click="submitForm('editForm')">{{ editForm.id? 'Update' : 'Create' }}</el-button>
             </div>
         </el-dialog>
+
+        <el-dialog
+            title="Stock Take"
+            custom-class="min-w-[400px]"
+            :visible.sync="dialogStockTake"
+            min-width="400px"
+            :before-close="dialogStockTakeClose">
+                <StockTakeDetail :stockTakeId="stockTakeId" />
+        </el-dialog>
     </div>
 </template>
 <script lang="ts">
 import axios from '@/axios'
 import moment from 'moment'
 import { Component, Vue } from 'vue-property-decorator'
+import StockTakeDetail from './detail.vue'
 
-@Component
+@Component({
+    components: {
+        StockTakeDetail
+    }
+})
 export default class Stocktake extends Vue {
     searchForm: any = {
                 limit: 10,
@@ -137,9 +151,11 @@ export default class Stocktake extends Vue {
     delBtlStatu: boolean = true
     sumTotal: number = 0
     total: number = 0
-    size: number|undefined
+    size: number
     current: number = 1
     dialogVisible: boolean = false
+    dialogStockTake: boolean = false
+    stockTakeId: number = 0
 
                 tableData: any =[]
                 placeItem: any =[]
@@ -172,8 +188,6 @@ export default class Stocktake extends Vue {
     itemTotal: number = 0
     itemSize: number|undefined
     itemCurrent: number 
-
-    stockTakeId: number = 0
     itemTakeDialog: boolean = false
 
     statusItemNew: any = []
@@ -196,7 +210,8 @@ export default class Stocktake extends Vue {
     }
 
     stockTakeItem(id: number) {
-        this.$router.push({ path: `/stock/stocktake/${id}` })
+        this.dialogStockTake = true
+        this.stockTakeId = id
     }
 
     stockTakeList() {
@@ -321,6 +336,9 @@ export default class Stocktake extends Vue {
                     });
                 })
             }
+    dialogStockTakeClose() {
+        this.dialogStockTake = false
+    }
 }
 </script>
 <style scoped>
