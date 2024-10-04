@@ -41,7 +41,7 @@ const routes = [
 ]
 const router = new Router({
     mode: 'history',
-    base: '/fixedasset-vue/',
+    base: '/fixedasset-vue-pg/',
     routes
 })
 

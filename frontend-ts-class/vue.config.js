@@ -3,12 +3,12 @@ function resolve(dir) {
     return path.join(__dirname, '.', dir);
 }
 module.exports = {
-    publicPath: process.env.ENV === 'production' ? '/fixedasset-vue':'/',
+    publicPath: process.env.ENV === 'production' ? '/fixedasset-vue-pg':'/',
     assetsDir: 'static',
     productionSourceMap: false,
     devServer: {
         allowedHosts: [
-            'localhost/fixedasset-vue',
+            'localhost/fixedasset-vue-pg/',
             'localhost'
         ],
         host: 'localhost',
@@ -16,7 +16,7 @@ module.exports = {
         proxy: {
             [process.env.VUE_APP_BASE_API]: {
                 //后端服务地址和端口
-                target: 'http://localhost:8350',
+                target: 'http://localhost:8370',
                 //是否跨域
                 changeOrigin: true,
                 pathRewrite: {
