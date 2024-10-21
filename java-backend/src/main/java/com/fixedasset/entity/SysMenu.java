@@ -61,7 +61,7 @@ public class SysMenu extends BaseEntity {
      * Sorting
      */
     @Schema(description = "The sorting order number")
-    @TableField("orderNum")
+    @TableField("order_num")
     private Integer orderNum;
 
 

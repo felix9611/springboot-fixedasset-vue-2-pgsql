@@ -8,6 +8,7 @@ import com.fixedasset.entity.ActionRecord;
 import com.fixedasset.entity.AssetType;
 import com.fixedasset.mapper.ActionRecordMapper;
 import com.fixedasset.mapper.AssetTypeMapper;
+import com.fixedasset.service.ActionRecordService;
 import com.fixedasset.service.AssetTypeService;
 import org.springframework.stereotype.Service;
 
@@ -21,43 +22,100 @@ public class AssetTypeServiceImpl extends ServiceImpl<AssetTypeMapper, AssetType
 
     @Resource AssetTypeMapper assetTypeMapper;
 
-    @Resource ActionRecordMapper actionRecordMapper;
+    @Resource private ActionRecordService actionRecordService;
 
-    @Resource private ActionRecord actionRecord;
+    public void batchImport(List<AssetType> assetTypes) {
+        for (AssetType assetType : assetTypes) {
+            createNew(assetType);
+        }
+    }
 
     public void createNew(AssetType assetType) {
-        actionRecord.setActionName("Save");
-        actionRecord.setActionMethod("POST");
-        actionRecord.setActionFrom("Asset Type Manger");
-        actionRecord.setActionData(assetType.toString());
-        actionRecord.setActionSuccess("Success");
-        actionRecord.setCreated(OffsetDateTime.now());
-        this.createdAction(actionRecord);
+        LambdaQueryWrapper<AssetType> queryWrapper = Wrappers.lambdaQuery();
+        if (StringUtils.isNotBlank(assetType.getTypeCode())) {
+            queryWrapper.eq(AssetType::getTypeCode, assetType.getTypeCode());
+        }
+        queryWrapper.eq(AssetType::getStatu, 1);
+        AssetType checkOne = assetTypeMapper.selectOne(queryWrapper);
+        if (checkOne == null ) {
+                assetType.setCreated(OffsetDateTime.now());
+                assetType.setStatu(1);
+                assetTypeMapper.insert(assetType);
 
-        assetTypeMapper.insert(assetType);
+                actionRecordService.createdAction(
+                    "Save", 
+                    "POST", 
+                    "Asset Type Manger", 
+                    assetType.toString(), 
+                    "Success"
+                );
+        } else {
+            actionRecordService.createdAction(
+                "Save", 
+                "POST", 
+                "Asset Type Manger", 
+                assetType.toString(), 
+                "Failure"
+            );
+            throw new RuntimeException("Exist in records!");
+        }
     }
     public void update(AssetType assetType) {
-        actionRecord.setActionName("Update");
-        actionRecord.setActionMethod("POST");
-        actionRecord.setActionFrom("Asset Type Manger");
-        actionRecord.setActionData(assetType.toString());
-        actionRecord.setActionSuccess("Success");
-        actionRecord.setCreated(OffsetDateTime.now());
-        this.createdAction(actionRecord);
+        LambdaQueryWrapper<AssetType> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(AssetType::getStatu, 1);
+        queryWrapper.eq(AssetType::getId, assetType.getId());
+        AssetType checkOne = assetTypeMapper.selectOne(queryWrapper);
+        if (checkOne.getId().equals(assetType.getId()) ) {
 
-        assetTypeMapper.updateById(assetType);
+            assetType.setUpdated(OffsetDateTime.now());
+            assetTypeMapper.updateById(assetType);
+
+            actionRecordService.createdAction(
+                "Update", 
+                "POST", 
+                "Asset Type Manger", 
+                assetType.toString(), 
+                "Success"
+            );
+        } else {
+            actionRecordService.createdAction(
+                "Update", 
+                "POST", 
+                "Asset Type Manger", 
+                assetType.toString(), 
+                "Failure"
+            );
+            throw new RuntimeException("No active data in records!");
+        }
     }
 
     public void remove(AssetType assetType) {
-        actionRecord.setActionName("Remove");
-        actionRecord.setActionMethod("DELETE");
-        actionRecord.setActionFrom("Asset Type Manger");
-        actionRecord.setActionData(assetType.toString());
-        actionRecord.setActionSuccess("Success");
-        actionRecord.setCreated(OffsetDateTime.now());
-        this.createdAction(actionRecord);
+        LambdaQueryWrapper<AssetType> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(AssetType::getStatu, 1);
+        queryWrapper.eq(AssetType::getId, assetType.getId());
+        AssetType checkOne = assetTypeMapper.selectOne(queryWrapper);
+        if (checkOne.getId().equals(assetType.getId()) ) {
+            assetType.setStatu(0);
+            assetType.setUpdated(OffsetDateTime.now());
+            assetTypeMapper.updateById(assetType);
 
-        assetTypeMapper.updateById(assetType);
+            actionRecordService.createdAction(
+                "Remove", 
+                "DELETE", 
+                "Asset Type Manger", 
+                assetType.toString(), 
+                "Success"
+            );
+        } else {
+            actionRecordService.createdAction(
+                "Remove", 
+                "DELETE", 
+                "Asset Type Manger", 
+                assetType.toString(), 
+                "Failure"
+            );
+            throw new RuntimeException("No active data in records!");
+        }
     }
 
     public AssetType getData(AssetType assetType) {
@@ -72,14 +130,9 @@ public class AssetTypeServiceImpl extends ServiceImpl<AssetTypeMapper, AssetType
         return assetTypeMapper.selectOne(queryWrapper);
     }
 
-
-
     public List<AssetType> getAll() {
-        return assetTypeMapper.getALL();
-    }
-
-
-    public int createdAction(ActionRecord actionRecord) {
-        return actionRecordMapper.insert(actionRecord);
+        LambdaQueryWrapper<AssetType> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(AssetType::getStatu, 1);
+        return assetTypeMapper.selectList(queryWrapper); // assetTypeMapper.getALL();
     }
 }
