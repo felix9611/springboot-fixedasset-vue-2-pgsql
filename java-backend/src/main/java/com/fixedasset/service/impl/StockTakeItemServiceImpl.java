@@ -12,6 +12,7 @@ import com.fixedasset.entity.StockTakeItem;
 import com.fixedasset.mapper.ActionRecordMapper;
 import com.fixedasset.mapper.StockTakeItemMapper;
 import com.fixedasset.mapper.StockTakeMapper;
+import com.fixedasset.service.ActionRecordService;
 import com.fixedasset.service.AssetListService;
 import com.fixedasset.service.StockTakeItemService;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,9 @@ import java.time.OffsetDateTime;
 @Service
 public class StockTakeItemServiceImpl extends ServiceImpl<StockTakeItemMapper, StockTakeItem> implements StockTakeItemService {
 
-    @Resource ActionRecordMapper actionRecordMapper;
+    @Resource private ActionRecordService actionRecordService;
 
-    @Resource private ActionRecord actionRecord;
-
-    @Resource private  StockTakeItemMapper stockTakeItemMapper;
+    @Resource private StockTakeItemMapper stockTakeItemMapper;
 
     @Resource private StockTakeMapper stockTakeMapper;
 
@@ -75,17 +74,13 @@ public class StockTakeItemServiceImpl extends ServiceImpl<StockTakeItemMapper, S
             stockTakeItem.setCheckTime(OffsetDateTime.now());
             stockTakeItemMapper.insert(stockTakeItem);
 
-            actionRecord.setActionName("Save");
-            actionRecord.setActionMethod("POST");
-            actionRecord.setActionFrom("Stocktake Item");
-            actionRecord.setActionData(stockTakeItem.toString());
-            actionRecord.setActionSuccess("Success");
-            actionRecord.setCreated(OffsetDateTime.now());
-            this.createdAction(actionRecord);
+            actionRecordService.createdAction(
+                "Save", 
+                "POST", 
+                "Stocktake Item", 
+                stockTakeItem.toString(), 
+                "Success"
+            );
         
-    }
-
-    public int createdAction(ActionRecord actionRecord) {
-        return actionRecordMapper.insert(actionRecord);
     }
 }
