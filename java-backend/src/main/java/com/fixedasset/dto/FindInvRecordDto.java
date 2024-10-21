@@ -13,16 +13,16 @@ import java.time.OffsetDateTime;
 @Data
 public class FindInvRecordDto extends InvRecord {
     @Schema(description = "Create date time form")
-    private LocalDateTime createdTo;
+    private OffsetDateTime createdTo;
 
     @Schema(description = "Create date time to")
-    private LocalDateTime createdFrom;
+    private OffsetDateTime createdFrom;
 
-    public LocalDateTime getCreatedFrom() {
+    public OffsetDateTime getCreatedFrom() {
         return createdFrom.plusHours(8);
     }
 
-    public LocalDateTime getCreatedTo() {
+    public OffsetDateTime getCreatedTo() {
         return createdTo.plusHours(8);
     }
 }
