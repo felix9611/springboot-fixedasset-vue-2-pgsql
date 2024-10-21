@@ -7,7 +7,7 @@ import javax.persistence.Transient;
 
 import com.fixedasset.entity.RepairRecord;
 
-// @EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class RepairRecordListDto extends RepairRecord{
     @Transient private String assetCode;
@@ -22,12 +22,6 @@ public class RepairRecordListDto extends RepairRecord{
     @Transient private int maintenanceReriod;
 
     @Transient private String maintenanceName;
-
-    @Transient private OffsetDateTime maintenanceDate;
-
-    @Transient private OffsetDateTime maintenanceFinishDate;
-
-    @Transient private OffsetDateTime repairInvoiceDate;
 
     @Transient private String repairInvoiceNo;
 
