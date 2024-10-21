@@ -1,5 +1,7 @@
 package com.fixedasset.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -17,4 +19,6 @@ public interface RepairRecordService extends IService<RepairRecord>{
     void voidRecord(Long id);
 
     Page<RepairRecordListDto> newPage(Page page, LambdaQueryWrapper<RepairRecordListDto> queryWrapper);
+
+    void importData(List<RepairRecord> repairRecords);
 }
