@@ -3,18 +3,13 @@ package com.fixedasset.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fixedasset.entity.ActionRecord;
-import com.fixedasset.entity.AssetList;
 import com.fixedasset.entity.AssetListFile;
-import com.fixedasset.mapper.ActionRecordMapper;
 import com.fixedasset.mapper.AssetListFileMapper;
 import com.fixedasset.service.ActionRecordService;
 import com.fixedasset.service.AssetListFileService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.annotation.Resources;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -25,9 +20,7 @@ public class AssetListFileServiceImpl extends ServiceImpl<AssetListFileMapper, A
 
     @Resource private AssetListFile assetListFile;
 
-    @Resource private ActionRecordMapper  actionRecordMapper;
-
-    @Resource private  ActionRecord actionRecord;
+    @Resource private ActionRecordService actionRecordService;
 
     public void saveListPicture(AssetListFile assetListFile){
 
@@ -35,13 +28,13 @@ public class AssetListFileServiceImpl extends ServiceImpl<AssetListFileMapper, A
         assetListFile.setCreated(OffsetDateTime.now());
         assetListFileMapper.insert(assetListFile);
 
-        actionRecord.setActionName("Add");
-        actionRecord.setActionMethod("POST");
-        actionRecord.setActionFrom("Asset List - Photo");
-        actionRecord.setActionData("Any Data");
-        actionRecord.setActionSuccess("Success");
-        actionRecord.setCreated(OffsetDateTime.now());
-        this.createdAction(actionRecord);
+        actionRecordService.createdAction(
+            "Add", 
+            "POST", 
+            "Asset List- Photo", 
+            "Any Data", 
+            "Success"
+        );
     }
 
     public List<AssetListFile> getByAssetId(AssetListFile assetListFile) {
@@ -54,20 +47,16 @@ public class AssetListFileServiceImpl extends ServiceImpl<AssetListFileMapper, A
     public void removeFile(Long id) {
         assetListFile.setId(id);
         assetListFile.setStatu(0);
+        assetListFile.setUpdated(OffsetDateTime.now());
         assetListFileMapper.updateById(assetListFile);
 
-        actionRecord.setActionName("REMOVE");
-        actionRecord.setActionMethod("DELETE");
-        actionRecord.setActionFrom("Asset List - Photo");
-        actionRecord.setActionData("Any Data");
-        actionRecord.setActionSuccess("Success");
-        actionRecord.setCreated(OffsetDateTime.now());
-        this.createdAction(actionRecord);
-
-    }
-
-    public int createdAction(ActionRecord actionRecord) {
-        return actionRecordMapper.insert(actionRecord);
+        actionRecordService.createdAction(
+            "REMOVE", 
+            "DELETE", 
+            "Asset List- Photo", 
+            "Any Data", 
+            "Success"
+        );
     }
 
 }
