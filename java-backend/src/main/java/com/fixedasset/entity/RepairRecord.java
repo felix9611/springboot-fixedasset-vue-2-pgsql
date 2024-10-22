@@ -36,15 +36,15 @@ public class RepairRecord {
 
     @Schema(description = "Maintenance date")
     @TableField("maintenance_date")
-    private String maintenanceDate;
+    private OffsetDateTime maintenanceDate;
 
     @Schema(description = "Finish maintenance date")
     @TableField("maintenance_finish_date")
-    private String maintenanceFinishDate;
+    private OffsetDateTime maintenanceFinishDate;
 
     @Schema(description = "Repair invoice date")
     @TableField("repair_invoice_date")
-    private String repairInvoiceDate;
+    private OffsetDateTime repairInvoiceDate;
 
     @Schema(description = "Repair nO.")
     @TableField("repair_invoice_no")
