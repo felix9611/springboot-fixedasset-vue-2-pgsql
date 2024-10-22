@@ -5,7 +5,6 @@ import java.util.List;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fixedasset.common.lang.Result;
 import com.fixedasset.dto.RepairRecordListDto;
 import com.fixedasset.entity.RepairRecord;
 

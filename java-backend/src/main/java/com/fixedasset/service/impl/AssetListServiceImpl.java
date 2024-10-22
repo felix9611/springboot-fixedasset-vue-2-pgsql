@@ -9,19 +9,33 @@ import com.fixedasset.dto.*;
 import com.fixedasset.entity.ActionRecord;
 import com.fixedasset.entity.AssetList;
 import com.fixedasset.entity.AssetListFile;
+import com.fixedasset.entity.AssetType;
+import com.fixedasset.entity.Department;
+import com.fixedasset.entity.Location;
+import com.fixedasset.entity.Vendor;
 import com.fixedasset.mapper.ActionRecordMapper;
 import com.fixedasset.mapper.AssetListMapper;
+import com.fixedasset.service.ActionRecordService;
 import com.fixedasset.service.AssetListFileService;
 import com.fixedasset.service.AssetListService;
+import com.fixedasset.service.AssetTypeService;
+import com.fixedasset.service.DepartmentService;
 import com.fixedasset.service.InvRecordService;
+import com.fixedasset.service.LocationService;
+import com.fixedasset.service.VendorService;
 
 import cn.hutool.json.JSONUtil;
 
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -32,18 +46,24 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
 
     @Resource AssetListMapper assetListMapper;
 
-    @Resource ActionRecordMapper actionRecordMapper;
-
-    @Resource private ActionRecord actionRecord;
-
     @Resource private InvRecordService invRecordService;
 
     @Resource private AssetListFileService assetListFileService;
 
     @Resource private AssetListFile assetListFile;
 
+    @Resource private AssetTypeService assetTypeService;
+
+    @Resource private DepartmentService departmentService;
+
+    @Resource private LocationService locationService;
+
+    @Resource private VendorService vendorService;
+
+    @Resource private ActionRecordService actionRecordService;
+
     public Page<AssetListViewDTO> newPage(Page page, LambdaQueryWrapper<AssetList> queryWrapper){
-        return this.assetListMapper.page(page, queryWrapper);
+        return this.assetListMapper.pageAndList(page, queryWrapper);
     }
 
     public List<AssetListViewDTO> newPageInWriteOff(LambdaQueryWrapper<AssetList> queryWrapper){
@@ -106,81 +126,283 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         queryWrapper.eq(AssetList::getSponsor, 1);
         queryWrapper.isNotNull(AssetList::getSponsorName);
 
-        return assetListMapper.sumCostWithSponsor(queryWrapper);
+        return assetListMapper.sumCost(queryWrapper);
     }
 
     public String createNew(AssetList assetList) {
-        String newCode = this.getNewAssetCode();
-        assetList.setAssetCode(newCode);
-        assetList.setStatu(1);
-        assetList.setCreated(OffsetDateTime.now());
+        LambdaQueryWrapper<AssetList> queryWrapper2 = Wrappers.lambdaQuery();
+        queryWrapper2.eq(AssetList::getAssetName, assetList.getAssetName());
+        queryWrapper2.eq(AssetList::getStatu, 1);
+        AssetList checkAsset = assetListMapper.selectOne(queryWrapper2);
 
-        assetListMapper.insert(assetList);
+        if (checkAsset == null) {
+            String newCode = this.getNewAssetCode();
+            assetList.setAssetCode(newCode);
+            assetList.setStatu(1);
+            assetList.setCreated(OffsetDateTime.now());
 
-        // Save file
-        List<AssetListFile> newAssetListFiles = assetList.getNewAssetListFiles();
-        if (newAssetListFiles.size() > 0) {
-            for (AssetListFile assetListFile : newAssetListFiles) {
-                assetListFile.setAssetId(Math.toIntExact(assetList.getId()));
-                assetListFileService.saveListPicture(assetListFile);
-            }
-        } 
+            assetListMapper.insert(assetList);
 
-        invRecordService.saveNewRecord(newCode, assetList.getPlaceId());
+            // Save file
+            List<AssetListFile> newAssetListFiles = assetList.getNewAssetListFiles();
+            if (newAssetListFiles.size() > 0) {
+                for (AssetListFile assetListFile : newAssetListFiles) {
+                    assetListFile.setAssetId(Math.toIntExact(assetList.getId()));
+                    assetListFileService.saveListPicture(assetListFile);
+                }
+            } 
 
-        actionRecord.setActionName("Save");
-        actionRecord.setActionMethod("POST");
-        actionRecord.setActionFrom("Asset List Manger");
-        actionRecord.setActionData(assetList.toString());
-        actionRecord.setActionSuccess("Success");
-        actionRecord.setCreated(OffsetDateTime.now());
-      //  this.createdAction(actionRecord);
-        return newCode;
+            invRecordService.saveNewRecord(newCode, assetList.getPlaceId());
+
+            actionRecordService.createdAction(
+                    "Save", 
+                    "POST", 
+                    "Asset List", 
+                    assetList.getAssetCode() + " - " + assetList.getAssetName(), 
+                    "Success"
+            );
+
+            return newCode;
+        } else {
+            actionRecordService.createdAction(
+                    "Save", 
+                    "POST", 
+                    "Asset List", 
+                    assetList.getAssetCode() + " - " + assetList.getAssetName(), 
+                    "Failure"
+            );
+            throw new RuntimeException("Exist in records!");
+        }
+        
+    }
+
+    public void importData(List<AssetListUploadDataDto> assetListUploadDatas) {
+        for (AssetListUploadDataDto assetListUploadDataDto : assetListUploadDatas) {
+
+
+           /*  LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
+
+            queryWrapper.eq(AssetList::getAssetName, assetListUploadDataDto.getAssetName());
+            queryWrapper.eq(AssetList::getStatu, 1);
+
+            AssetList assetListCheck = assetListMapper.selectOne(queryWrapper);
+
+            if (assetListCheck.getId() == null) { */
+                LambdaQueryWrapper<AssetList> queryWrapper2 = Wrappers.lambdaQuery();
+                queryWrapper2.eq(AssetList::getAssetCode, assetListUploadDataDto.getAssetCode());
+                queryWrapper2.eq(AssetList::getStatu, 1);
+                AssetList checkAssetCode = assetListMapper.selectOne(queryWrapper2);
+
+                if (checkAssetCode != null) {
+                    String newCode = this.getNewAssetCode();
+                    assetList.setAssetCode(newCode);
+                } else {
+                    assetList.setAssetCode(assetListUploadDataDto.getAssetCode());
+                }
+
+                if (StringUtils.isNotBlank(assetListUploadDataDto.getTypeCode()) || StringUtils.isNotBlank(assetListUploadDataDto.getTypeName())) {
+                    LambdaQueryWrapper<AssetType> queryWrapperType = Wrappers.lambdaQuery();
+                    if(StringUtils.isNotBlank(assetListUploadDataDto.getTypeCode())) {
+                        queryWrapperType.eq(AssetType::getTypeCode, assetListUploadDataDto.getTypeCode());
+                    }
+                    if(StringUtils.isNotBlank(assetListUploadDataDto.getTypeName())) {
+                        queryWrapperType.eq(AssetType::getTypeName, assetListUploadDataDto.getTypeName());
+                    }
+                    queryWrapperType.eq(AssetType::getStatu, 1);
+                    AssetType assetType = assetTypeService.getOne(queryWrapperType);
+
+                    if (assetType == null) {
+                        throw new RuntimeException("The type not exist in records!");
+                    } else {
+                        assetList.setTypeId(Math.toIntExact(assetType.getId()));
+                    }
+                }
+
+                if (StringUtils.isNotBlank(assetListUploadDataDto.getDeptCode()) || StringUtils.isNotBlank(assetListUploadDataDto.getDeptName())) {
+                    LambdaQueryWrapper<Department> queryWrapperDept = Wrappers.lambdaQuery();
+                    if(StringUtils.isNotBlank(assetListUploadDataDto.getDeptCode())) {
+                        queryWrapperDept.eq(Department::getDeptCode, assetListUploadDataDto.getDeptCode());
+                    }
+                    if(StringUtils.isNotBlank(assetListUploadDataDto.getDeptName())) {
+                        queryWrapperDept.eq(Department::getDeptName, assetListUploadDataDto.getDeptName());
+                    }
+                    queryWrapperDept.eq(Department::getStatu, 1);
+                    Department department = departmentService.getOne(queryWrapperDept);
+
+                    if (department == null) {
+                        throw new RuntimeException("The type not exist in records!");
+                    } else {
+                        assetList.setDeptId(Math.toIntExact(department.getId()));
+                    }
+                }
+
+                if (StringUtils.isNotBlank(assetListUploadDataDto.getPlaceCode()) || StringUtils.isNotBlank(assetListUploadDataDto.getPlaceName())) {
+                    LambdaQueryWrapper<Location> queryWrapperPlace = Wrappers.lambdaQuery();
+                    if(StringUtils.isNotBlank(assetListUploadDataDto.getPlaceCode())) {
+                        queryWrapperPlace.eq(Location::getPlaceCode, assetListUploadDataDto.getPlaceCode());
+                    }
+                    if(StringUtils.isNotBlank(assetListUploadDataDto.getPlaceName())) {
+                        queryWrapperPlace.eq(Location::getPlaceName, assetListUploadDataDto.getPlaceName());
+                    }
+                    queryWrapperPlace.eq(Location::getStatu, 1);
+                    Location location = locationService.getOne(queryWrapperPlace);
+
+                    if (location == null) {
+                        throw new RuntimeException("The type not exist in records!");
+                    } else {
+                        assetList.setPlaceId(Math.toIntExact(location.getId()));
+                    }
+                }
+
+                if (StringUtils.isNotBlank(assetListUploadDataDto.getVendorCode()) || StringUtils.isNotBlank(assetListUploadDataDto.getVendorName())) {
+                    LambdaQueryWrapper<Vendor> queryWrapperVendor = Wrappers.lambdaQuery();
+                    if (StringUtils.isNotBlank(assetListUploadDataDto.getVendorCode())) {
+                        queryWrapperVendor.eq(Vendor::getVendorCode, assetListUploadDataDto.getVendorCode());
+                    }
+                    if (StringUtils.isNotBlank(assetListUploadDataDto.getVendorName())) {
+                        queryWrapperVendor.eq(Vendor::getVendorName, assetListUploadDataDto.getVendorName());
+                    }
+                    if (StringUtils.isNotBlank(assetListUploadDataDto.getVendorType())) {
+                        queryWrapperVendor.eq(Vendor::getType, assetListUploadDataDto.getVendorType());
+                    }
+                    queryWrapperVendor.eq(Vendor::getStatu, 1);
+                    Vendor checkOne = vendorService.getOne(queryWrapperVendor);
+
+                    Vendor vendor = new Vendor();
+                    vendor.setVendorCode(assetListUploadDataDto.getVendorCode());
+                    vendor.setVendorName(assetListUploadDataDto.getVendorName());
+                    vendor.setVendorOtherName(assetListUploadDataDto.getVendorOtherName());
+                    vendor.setType(assetListUploadDataDto.getVendorType());
+                    vendor.setEmail(assetListUploadDataDto.getVendorEmail());
+                    vendor.setPhone(assetListUploadDataDto.getVendorPhone());
+                    vendor.setFax(assetListUploadDataDto.getVendorFax());
+                    vendor.setAddress(assetListUploadDataDto.getVendorAddress());
+                    vendor.setContactPerson(assetListUploadDataDto.getVendorContactPerson());
+                    vendor.setRemark(assetListUploadDataDto.getVendorRemark());
+
+                    if (checkOne == null) {
+                        vendorService.createOne(vendor);
+                        assetList.setVendorId(Math.toIntExact(vendor.getId()));
+                    } else {
+                        assetList.setVendorId(Math.toIntExact(checkOne.getId()));
+                        vendor.setId(checkOne.getId());
+                        vendorService.updateOne(vendor);
+                    }
+                }
+
+                assetList.setAssetName(assetListUploadDataDto.getAssetName());
+                assetList.setUnit(assetListUploadDataDto.getUnit());
+                assetList.setBuyDate(assetListUploadDataDto.getBuyDate());
+                assetList.setDescription(assetListUploadDataDto.getDescription());
+                assetList.setSponsor(assetListUploadDataDto.getSponsor() == "Yes" ? 1 : 0);
+                assetList.setSponsorName(assetListUploadDataDto.getSponsorName());
+                assetList.setCost(assetListUploadDataDto.getCost());
+                assetList.setSerialNum(assetListUploadDataDto.getSerialNum());
+                assetList.setInvoiceNo(assetListUploadDataDto.getInvoiceNo());
+                assetList.setInvoiceDate(assetListUploadDataDto.getInvoiceDate());
+                assetList.setInvoiceRemark(assetListUploadDataDto.getInvoiceRemark());
+                assetList.setTaxCountryCode(assetListUploadDataDto.getTaxCountryCode());
+                assetList.setTaxCode(assetListUploadDataDto.getTaxCode());
+                assetList.setTaxRate(assetListUploadDataDto.getTaxRate());
+                assetList.setIncludeTax(assetListUploadDataDto.getIncludeTax() == "Yes" ? true : false);
+                assetList.setAfterBeforeTax(assetListUploadDataDto.getAfterBeforeTax());
+                assetList.setAccountCode(assetListUploadDataDto.getAccountCode());
+                assetList.setAccountName(assetListUploadDataDto.getAccountName());
+                assetList.setBrandCode(assetListUploadDataDto.getBrandCode());
+                assetList.setBrandName(assetListUploadDataDto.getBrandName());
+                assetList.setChequeNo(assetListUploadDataDto.getChequeNo());
+                assetList.setMaintenancePeriodStart(assetListUploadDataDto.getMaintenancePeriodStart());
+                assetList.setMaintenancePeriodEnd(assetListUploadDataDto.getMaintenancePeriodEnd());
+                assetList.setVoucherUsedDate(assetListUploadDataDto.getVoucherUsedDate());
+                assetList.setVoucherNo(assetListUploadDataDto.getVoucherNo());
+                
+                assetList.setRemark(assetListUploadDataDto.getRemark());
+                assetList.setStatu(1);
+                assetList.setCreated(OffsetDateTime.now());
+
+                assetListMapper.insert(assetList);
+
+                invRecordService.saveNewRecord(assetList.getAssetCode(), assetList.getPlaceId());
+         /*    } else {
+                throw new RuntimeException("Exist in records!");
+            }*/
+        }
     }
 
     public void update(AssetList assetList) {
-        long oldId = assetList.getId();
-        int assetId = (int)oldId;
-        invRecordService.saveRecord(assetId, assetList.getPlaceId());
+        LambdaQueryWrapper<AssetList> queryWrapper2 = Wrappers.lambdaQuery();
+        queryWrapper2.eq(AssetList::getAssetCode, assetList.getAssetCode());
+        queryWrapper2.eq(AssetList::getStatu, 1);
+        AssetList checkAsset = assetListMapper.selectOne(queryWrapper2);
 
-        assetList.setUpdated(OffsetDateTime.now());
+        if (checkAsset.getId().equals(assetList.getId())) {
+            long oldId = assetList.getId();
+            int assetId = (int)oldId;
+            invRecordService.saveRecord(assetId, assetList.getPlaceId());
 
-        List<AssetListFile> newAssetListFiles = assetList.getNewAssetListFiles();
+            assetList.setUpdated(OffsetDateTime.now());
 
-        if (newAssetListFiles.size() > 0) {
-            for (AssetListFile assetListFile : newAssetListFiles) {
-                assetListFile.setAssetId(Math.toIntExact(assetList.getId()));
-                assetListFileService.saveListPicture(assetListFile);
-            }
-        } 
+            List<AssetListFile> newAssetListFiles = assetList.getNewAssetListFiles();
 
+            if (newAssetListFiles.size() > 0) {
+                for (AssetListFile assetListFile : newAssetListFiles) {
+                    assetListFile.setAssetId(Math.toIntExact(assetList.getId()));
+                    assetListFileService.saveListPicture(assetListFile);
+                }
+            } 
 
-        assetListMapper.updateById(assetList);
+            assetListMapper.updateById(assetList);
 
-        actionRecord.setActionName("Update");
-        actionRecord.setActionMethod("POST");
-        actionRecord.setActionFrom("Asset List Manger");
-        actionRecord.setActionData(assetList.toString());
-        actionRecord.setActionSuccess("Success");
-        actionRecord.setCreated(OffsetDateTime.now());
-       // this.createdAction(actionRecord);
+            actionRecordService.createdAction(
+                "Update", 
+                "POST", 
+                "Asset List", 
+                assetList.getAssetCode() + " - " + assetList.getAssetName(), 
+                "Success"
+            );
+
+        } else {
+            actionRecordService.createdAction(
+                "Update", 
+                "POST", 
+                "Asset List", 
+                assetList.getAssetCode() + " - " + assetList.getAssetName(), 
+                "Failure"
+            );
+            throw new RuntimeException("No matched data in records!");
+        }
     }
 
     public void remove(Long id) {
-        AssetList assetListOld = assetListMapper.selectById(id);
-        invRecordService.writeOff(assetListOld.getAssetCode(), assetListOld.getPlaceId());
+        LambdaQueryWrapper<AssetList> queryWrapper2 = Wrappers.lambdaQuery();
+        queryWrapper2.eq(AssetList::getId, id);
+        queryWrapper2.eq(AssetList::getStatu, 1);
+        AssetList checkAsset = assetListMapper.selectOne(queryWrapper2);
+        if (checkAsset.getId().equals(assetList.getId())) {
+            AssetList assetListOld = assetListMapper.selectById(id);
+            invRecordService.writeOff(assetListOld.getAssetCode(), assetListOld.getPlaceId());
 
-        assetList.setId(id);
-        assetList.setStatu(0);
-        assetListMapper.updateById(assetList);
+            assetList.setId(id);
+            assetList.setStatu(0);
+            assetListMapper.updateById(assetList);
 
-        actionRecord.setActionName("Remove");
-        actionRecord.setActionMethod("Delete");
-        actionRecord.setActionFrom("Asset List Manger");
-        actionRecord.setActionData(assetList.toString());
-        actionRecord.setActionSuccess("Success");
-        actionRecord.setCreated(OffsetDateTime.now());
-        this.createdAction(actionRecord);
+            actionRecordService.createdAction(
+                "Remove", 
+                "Delete", 
+                "Asset List", 
+                id.toString(), 
+                "Success"
+            );
+        } else {
+            actionRecordService.createdAction(
+                "Remove", 
+                "Delete", 
+                "Asset List", 
+                id.toString(),
+                "Failure"
+            );
+            throw new RuntimeException("No matched data in records!");
+        }
     }
 
     public AssetList findOneById(Long id) {
@@ -204,6 +426,7 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
     public AssetList findOneByAssetCode(AssetList assetList) {
         LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(AssetList::getAssetCode, assetList.getAssetCode());
+        queryWrapper.eq(AssetList::getStatu, 1);
         return assetListMapper.selectOne(queryWrapper);
     }
 
@@ -211,177 +434,56 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
 
 
     public List<AssetYearCostDept> assetYearCostDeptFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return assetListMapper.assetYearCostDeptFind(queryWrapper);
     }
 
     public List<AssetItemYearMonthDto> getItemYearMonthFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return  assetListMapper.getItemYearMonthFind(queryWrapper);
     }
 
     public List<AssetYearCostType> assetYearCostTypeFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);;
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return  assetListMapper.assetYearCostTypeFind(queryWrapper);
     }
 
     public List<GroupByAssetOfTypeDto> groupByTypeFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return  assetListMapper.groupByTypeFind(queryWrapper);
     }
 
     public List<AssetGroupPlaceDto> getAssetGroupPlaceFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return  assetListMapper.getAssetGroupPlaceFind(queryWrapper);
     }
 
     public List<AssetYearQtyType> getAssetYearQtyTypeFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return  assetListMapper.getAssetYearQtyTypeFind(queryWrapper);
     }
 
     public List<AssetYearQtyDept> getAssetYearQtyDeptFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return  assetListMapper.getAssetYearQtyDeptFind(queryWrapper);
     }
 
     public List<AssetCostYearMonthDto> getAssetCostYearMonthFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return  assetListMapper.getAssetCostYearMonthFind(queryWrapper);
     }
 
     public List<AssetYearQtyPlaceDto> getAssetYearQtyPlaceFind(AssetList assetList) {
-        LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
-
-        queryWrapper.isNotNull(AssetList::getBuyDate);
-        queryWrapper.notIn(AssetList::getDeptId, 0);
-        queryWrapper.notIn(AssetList::getTypeId, 0);
-
-        if (assetList.getBuyDateFrom() != null && assetList.getBuyDateTo() != null) {
-            queryWrapper.between(AssetList::getBuyDate, assetList.getBuyDateFrom(), assetList.getBuyDateTo());
-        }
-        if (!(assetList.getTypeId() == 0)) {
-            queryWrapper.eq(AssetList::getTypeId, assetList.getTypeId());
-        }
-        if (!(assetList.getDeptId() == 0)) {
-            queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
-        }
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
         return  assetListMapper.getAssetYearQtyPlaceFind(queryWrapper);
     }
 
     public List<AssetYearQtyPlaceDto> getAssetYearCostPlaceFind(AssetList assetList) {
+        LambdaQueryWrapper<AssetList> queryWrapper = dataGlobalFilter(assetList);
+        return  assetListMapper.getAssetYearCostPlaceFind(queryWrapper);
+    }
+
+    LambdaQueryWrapper<AssetList> dataGlobalFilter(AssetList assetList) {
         LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
 
         queryWrapper.isNotNull(AssetList::getBuyDate);
@@ -397,7 +499,8 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         if (!(assetList.getDeptId() == 0)) {
             queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
         }
-        return  assetListMapper.getAssetYearCostPlaceFind(queryWrapper);
+
+        return queryWrapper;
     }
 
     public String getNewAssetCode() {
@@ -409,18 +512,14 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
 
         assetCodes.forEach(o -> {
             String code = String.valueOf(o);
-            
             if (code.length() >= 6) {
-                int one = Integer.parseInt(code.substring(code.length() - 5));
+                Integer one = Integer.parseInt(code.substring(code.length() - 5));
                 if (one > maxAssetCodes.get()) {
                     maxAssetCodes.set(one);
                 }
-                System.out.println(maxAssetCodes);
             }
-        });
 
-        
-        
+        });
         return padRight(maxAssetCodes.get() + 1, 6, "0");
     }
 
@@ -436,8 +535,12 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         return str.toString();
     }
 
-    public int createdAction(ActionRecord actionRecord) {
-        return actionRecordMapper.insert(actionRecord);
+    public OffsetDateTime getFormat(String dateString) {
+        Date date = new Date(dateString);
+        Instant instant = Instant.ofEpochMilli(date.getTime());
+        date = Date.from(instant);
+        OffsetDateTime ldt = OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
+        return ldt;
     }
 
 }

@@ -10,12 +10,15 @@ import com.fixedasset.entity.SysMenu;
 import com.fixedasset.entity.SysUser;
 import com.fixedasset.mapper.SysMenuMapper;
 import com.fixedasset.mapper.SysUserMapper;
+import com.fixedasset.service.ActionRecordService;
 import com.fixedasset.service.SysMenuService;
 import com.fixedasset.service.SysUserService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,13 +26,15 @@ import java.util.List;
 @Service
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
-    @Resource
-    SysUserService sysUserService;
+    @Resource private SysUserService sysUserService;
 
-    @Resource
-    SysUserMapper sysUserMapper;
+    @Resource private SysUserMapper sysUserMapper;
+
+    @Resource private SysMenuMapper sysMenuMapper;
 
     @Resource private SysMenu sysMenu;
+
+    @Resource private ActionRecordService actionRecordService;
 
     @Override
     public List<SysMenuDto> getCurrentUserNav() {
@@ -65,7 +70,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public List<SysMenu> tree() {
         // Get all
-        List<SysMenu> sysMenus = this.list(new QueryWrapper<SysMenu>().orderByAsc("order_num").eq("statu", 1));
+        List<SysMenu> sysMenus = this.list(new QueryWrapper<SysMenu>().orderByAsc("orderNum").eq("statu", 1));
 
         // Convert to tree structure JSON
         return buildTreeMenu(sysMenus);
@@ -121,5 +126,97 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
         System.out.println(JSONUtil.toJsonStr(finalMenus));
         return finalMenus;
+    }
+
+    public void createOneMeun(SysMenu sysMenu) {
+        LambdaQueryWrapper<SysMenu> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(SysMenu::getName, sysMenu.getName());
+        queryWrapper.eq(SysMenu::getPath, sysMenu.getPath());
+        queryWrapper.eq(SysMenu::getStatu, 1);
+        SysMenu checkOne = this.getOne(queryWrapper);
+
+        if (checkOne == null) {
+            sysMenu.setCreated(OffsetDateTime.now());
+            sysMenu.setStatu(1);
+
+            sysMenuMapper.insert(sysMenu);
+
+            actionRecordService.createdAction(
+                "Create", 
+                "POST", 
+                "System Menu Manager", 
+                sysMenu.toString(), 
+                "Success"
+            );
+            
+        } else {
+            actionRecordService.createdAction(
+                "Create", 
+                "POST", 
+                "System Menu Manager", 
+                sysMenu.toString(), 
+                "Failure"
+            );
+            throw new RuntimeException("Exist in lists! Please check again!");
+        }
+    }
+
+    public void updateOne(SysMenu sysMenu) {
+        LambdaQueryWrapper<SysMenu> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(SysMenu::getId, sysMenu.getId());
+        queryWrapper.eq(SysMenu::getStatu, 1);
+        SysMenu checkOne = this.getOne(queryWrapper);
+
+        if (checkOne.getId().equals(sysMenu.getId())) {
+            sysMenu.setUpdated(OffsetDateTime.now());
+            sysMenuMapper.updateById(sysMenu);
+
+            actionRecordService.createdAction(
+                "Update", 
+                "POST", 
+                "System Menu Manager", 
+                sysMenu.toString(), 
+                "Success"
+            );
+        } else {
+            actionRecordService.createdAction(
+                "Update", 
+                "POST", 
+                "System Menu Manager", 
+                sysMenu.toString(), 
+                "Failure"
+            );
+            throw new RuntimeException("Not active data in records!");
+        }  
+    }
+
+    public void voidOne(Long id) {
+        LambdaQueryWrapper<SysMenu> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(SysMenu::getId, id);
+        queryWrapper.eq(SysMenu::getStatu, 1);
+        SysMenu checkOne = this.getOne(queryWrapper);
+
+        if (checkOne.getId().equals(id)) {
+            sysMenu.setUpdated(OffsetDateTime.now());
+            sysMenu.setStatu(0);
+            sysMenuMapper.updateById(sysMenu);
+
+            actionRecordService.createdAction(
+                "Void", 
+                "DELETE", 
+                "System Menu Manager", 
+                sysMenu.toString(), 
+                "Success"
+            );
+        } else {
+            actionRecordService.createdAction(
+                "Void", 
+                "DELETE", 
+                "System Menu Manager", 
+                sysMenu.toString(), 
+                "Failure"
+            );
+            throw new RuntimeException("Not active data in records!");
+        }  
     }
 }
