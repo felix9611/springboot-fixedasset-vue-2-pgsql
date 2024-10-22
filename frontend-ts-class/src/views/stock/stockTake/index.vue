@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full bg-white p-3">
+    <div class="container">
         <div class="handle-box">
             <el-form :inline="true">
                 <el-form-item>
@@ -18,8 +18,33 @@
                 <el-form-item>
                     <el-button type="primary" @click="dialogVisible = true">Create</el-button>
                 </el-form-item>
+
+             <!--   <el-form-item>
+                    <el-button @click="downloadTemplateExcel()">Download Template Excel</el-button>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button @click="clickUploadExcelDialog()">Upload Excel</el-button>
+                </el-form-item> -->
             </el-form>
         </div>
+
+        <el-dialog
+                title="Upload Excel"
+                :visible.sync="uploadExcelDialog"
+                width="700px"
+                :before-close="closeUploadExcelDialog">
+                <el-upload
+                        class="upload-demo"
+                        :auto-upload="false"
+                        :file-list="excelFileList"
+                        :on-change="uploadExcelFile"
+                        :on-remove="clearFile"
+                        >
+                        <el-button size="small" type="primary">Upload</el-button>
+                        <!--<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+                    </el-upload>
+        </el-dialog>
 
         <el-table
                 ref="multipleTable"
@@ -119,28 +144,16 @@
                 <el-button type="primary" @click="submitForm('editForm')">{{ editForm.id? 'Update' : 'Create' }}</el-button>
             </div>
         </el-dialog>
-
-        <el-dialog
-            title="Stock Take"
-            custom-class="min-w-[400px]"
-            :visible.sync="dialogStockTake"
-            min-width="400px"
-            :before-close="dialogStockTakeClose">
-                <StockTakeDetail :stockTakeId="stockTakeId" />
-        </el-dialog>
     </div>
 </template>
 <script lang="ts">
 import axios from '@/axios'
 import moment from 'moment'
 import { Component, Vue } from 'vue-property-decorator'
-import StockTakeDetail from './detail.vue'
+import { excelHeader, valueFields } from './excelHeader'
+import { formatJson, readExcel, downloadTempExcelFile } from '@/utils/importExcel'
 
-@Component({
-    components: {
-        StockTakeDetail
-    }
-})
+@Component
 export default class Stocktake extends Vue {
     searchForm: any = {
                 limit: 10,
@@ -151,11 +164,9 @@ export default class Stocktake extends Vue {
     delBtlStatu: boolean = true
     sumTotal: number = 0
     total: number = 0
-    size: number
+    size: number|undefined
     current: number = 1
     dialogVisible: boolean = false
-    dialogStockTake: boolean = false
-    stockTakeId: number = 0
 
                 tableData: any =[]
                 placeItem: any =[]
@@ -188,9 +199,18 @@ export default class Stocktake extends Vue {
     itemTotal: number = 0
     itemSize: number|undefined
     itemCurrent: number 
+
+    stockTakeId: number = 0
     itemTakeDialog: boolean = false
 
     statusItemNew: any = []
+    excelFileList: any = []
+    uploadExcelDialog: boolean = false
+
+    
+    clearFile() {
+        this.excelFileList = []
+    }
     
 
     created() {
@@ -210,8 +230,7 @@ export default class Stocktake extends Vue {
     }
 
     stockTakeItem(id: number) {
-        this.dialogStockTake = true
-        this.stockTakeId = id
+        this.$router.push({ path: `/stock/stocktake/${id}` })
     }
 
     stockTakeList() {
@@ -336,8 +355,46 @@ export default class Stocktake extends Vue {
                     });
                 })
             }
-    dialogStockTakeClose() {
-        this.dialogStockTake = false
+    
+    downloadTemplateExcel() {
+        downloadTempExcelFile(excelHeader, 'offline_stock_take_template.xlsx')
+    }
+
+    async uploadExcelFile(file: any) {
+        console.log(file)
+        const fileNmae = file.name
+
+        const data: any = await readExcel(file)
+        const processData = formatJson(excelHeader, valueFields, data)
+
+        const finalData: any = {
+            actionName: fileNmae,
+            stockTakeItemListRecord: processData
+        }
+
+        axios.post('/stock/stock_take/upload', finalData).then((res: any) => {
+            if (res) {
+                this.$notify({
+                    title: 'Msg',
+                    showClose: true,
+                    message: 'Upload success',
+                    type: 'success',
+                })
+                this.uploadExcelDialog = false
+                this.stockTakeList()
+                this.excelFileList = []
+                file = undefined
+            }
+        })
+    }
+
+    closeUploadExcelDialog() {
+        this.uploadExcelDialog = false
+    }
+
+    clickUploadExcelDialog() {
+        this.excelFileList = []
+        this.uploadExcelDialog = true
     }
 }
 </script>

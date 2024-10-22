@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <!--<div class="handle-box">
+    <div class="handle-box">
       <el-button icon="el-icon-back" circle @click="back"></el-button>
-    </div>-->
+    </div>
     <el-form :model="itemTakeForm" ref="itemTakeForm">
                     <el-form-item label="Asset Code"  prop="assetCode" label-width="100px">
                         <el-input v-model="itemTakeForm.assetCode" autocomplete="off"></el-input>
@@ -87,8 +87,9 @@
 <script lang="ts">
 import axios from '@/axios'
 import VueBase64FileUpload from 'vue-base64-file-upload'
+import type { UploadFile } from 'element-plus/es/components/upload/src/upload.type'
 import moment from 'moment'
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import QrcodeVue from 'qrcode.vue'
 
 @Component({
@@ -98,11 +99,9 @@ import QrcodeVue from 'qrcode.vue'
     }
 })
 export default class StockTakeDetail extends Vue {
-  @Prop({ type: Number, default: 0 })
-  stockTakeId!: number
-
   itemTakeForm: any = {}
   stockTakeItemList: any = []
+  stockTakeId: number = 0
 
   itemFindForm: any = {
     limit: 5,
@@ -115,20 +114,15 @@ export default class StockTakeDetail extends Vue {
   placeItem: any = []
 
   created() {
-    this.itemFindForm.stockTakeId = this.stockTakeId
-    this.itemTakeForm.stockTakeId = this.stockTakeId
+    this.itemFindForm.stockTakeId = Number(this.$route.params.id)
+    this.itemTakeForm.stockTakeId = Number(this.$route.params.id)
     this.stockTakeItems()
     this.getAllPlace()
     this.getAllValueCode()
   }
 
-  @Watch('stockTakeId')
-  onIdChange() {
-      console.log(this.stockTakeId, 'this.stockTakeId')
-      this.itemFindForm.stockTakeId = this.stockTakeId
-      this.itemTakeForm.stockTakeId = this.stockTakeId
-      this.stockTakeItems()
-    
+  back() {
+    this.$router.push({ path: '/stock/stocktake' })
   }
 
   getAllPlace() {

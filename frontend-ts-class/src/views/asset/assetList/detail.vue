@@ -1,6 +1,7 @@
 <template>
-  <div class="bg-white w-full">
+  <div class="w-full bg-white p-1 shadow-lg rounded-lg">
     <div class="handle-box p-2">
+        <el-button icon="el-icon-back" circle @click="back"></el-button>
         <el-button icon="el-icon-circle-plus" circle v-if="readonlyForm === true" @click="startEdit()"></el-button>
     </div>
     <div class="p-[1rem] grid lg:grid-cols-3 gap-6" v-if="editForm.assetListFiles && editForm.assetListFiles.length > 0">
@@ -17,7 +18,7 @@
         </div>
       </div>
     </div>
-    <el-form :model="editForm" ref="editForm" :disabled="readonlyForm"  class="grid sm:lg:grid-cols-1 lg:grid-cols-3 xl:grid-cols-2 gap-3 p-1">
+    <el-form :model="editForm" ref="editForm" :disabled="readonlyForm"  class="grid sm:lg:grid-cols-1 lg:grid-cols-4 p-1">
       <el-form-item class="lg:col-span-4 px-8">
         <el-upload
               class="upload-demo"
@@ -33,7 +34,7 @@
       <el-form-item label="Asset Code"  prop="assetCode" label-width="120px">
         <el-input v-model="editForm.assetCode" autocomplete="off" readonly></el-input>
       </el-form-item>
-      <el-form-item label="Asset Name"  prop="assetName" label-width="120px" class="lg:col-span-1">
+      <el-form-item label="Asset Name"  prop="assetName" label-width="120px" class="lg:col-span-3">
         <el-input v-model="editForm.assetName" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="Type" prop="type" label-width="120px">
@@ -97,7 +98,7 @@
         <el-input v-model="editForm.unit" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="Cost"  prop="cost" label-width="120px">
-        <el-input type="number" v-model="editForm.cost" autocomplete="off">
+        <el-input v-model="editForm.cost" autocomplete="off">
           <template #prepend>$</template>
         </el-input>
       </el-form-item>
@@ -215,7 +216,7 @@ import axios from '@/axios'
 import VueBase64FileUpload from 'vue-base64-file-upload'
 import type { UploadFile } from 'element-plus/es/components/upload/src/upload.type'
 import moment from 'moment'
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import QrcodeVue from 'qrcode.vue'
 import { uploadImgToBase64 } from '@/utils/uploadImgToBase64'
 
@@ -226,9 +227,6 @@ import { uploadImgToBase64 } from '@/utils/uploadImgToBase64'
     }
 })
 export default class StockTakeDetail extends Vue {
-  @Prop({ type: Number, default: 0 })
-  id!: number
-
   editForm: any = {}
   readonlyForm: boolean = false
   fileList: any = []
@@ -244,14 +242,6 @@ export default class StockTakeDetail extends Vue {
     { id: 0, label: 'No' },
     { id: 1, label: 'Yes' },
   ]
-
-  @Watch('id')
-  onIdChange() {
-    if (this.id > 0) {
-      this.editForm.id = this.id
-      this.editHandle()
-    }
-  }
 
   @Watch('editForm.taxCode')
   onTaxChange() {
@@ -276,12 +266,19 @@ export default class StockTakeDetail extends Vue {
     this.getAllType()
     this.getAllPlace()
     this.getAllVendor()
-    
+    if (this.$route.params.id) {
+      this.editForm.id = Number(this.$route.params.id)
+      this.editHandle()
+    }
     this.getAllTaxesData()
   }
 
+  back() {
+    this.$router.push({ path: '/asset/assetList' })
+  }
+
   editHandle() {
-    axios.get(`/asset/assetList/${this.id}`).then((res: any) => {
+    axios.get(`/asset/assetList/${this.$route.params.id}`).then((res: any) => {
       this.readonlyForm = true
       this.editForm = res.data.data
     })
@@ -387,8 +384,6 @@ export default class StockTakeDetail extends Vue {
                 delete this.editForm.assetListFiles
                 const saveData = {
                   ...this.editForm,
-                  includeTax: this.editForm.includeTax ? 1 : 0,
-                  cost: Number(this.editForm.cost),
                   newAssetListFiles: this.fileBase64Data
                 }
                 
@@ -401,6 +396,7 @@ export default class StockTakeDetail extends Vue {
                           message: 'Success to save',
                           type: 'success',
                         })
+                        this.back()
                         /* if (this.fileBase64Data[0]) {
                             const assetCode = this.editForm.id ? res.data.data.assetCode : res.data.data
                             axios.get(`/asset/assetList/assetCode/${assetCode}`).then(
