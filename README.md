@@ -66,6 +66,9 @@ mvn spring-boot:run
 
 // Packing the backend
 mvn package
+
+// API Doc URL
+http://localhost:8370/swagger-ui.html
 ~~~
 <br />
 
