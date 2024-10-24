@@ -27,6 +27,7 @@ Core:<br />
 ・Vue 2.6.10<br />
 ・moment 2.29.1<br />
 ・PostgreSQL v17<br />
+・Spring-Doc Open API  UI 1.6.15<br />
 <br />
 Component:<br />
 ------------
@@ -34,7 +35,6 @@ Component:<br />
 ・jspdf 2.5.1<br />
 ・xlsx ^0.18.2<br />
 ・xlsx-style ^0.8.13<br />
-・OpenAI<br />
 <br />
 
 Example Image<br />
