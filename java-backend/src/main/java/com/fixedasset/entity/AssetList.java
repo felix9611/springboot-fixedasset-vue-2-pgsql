@@ -2,6 +2,7 @@ package com.fixedasset.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -34,6 +35,7 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Buy Date")
     @TableField("buy_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime buyDate;
 
     @Schema(description = "Description")
@@ -62,6 +64,7 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Invoice Date")
     @TableField("invoice_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime invoiceDate;
 
    
@@ -131,10 +134,12 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Maintenance Period Range Start")
     @TableField("maintenance_period_start")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime maintenancePeriodStart;
 
     @Schema(description = "Maintenance Period Range End")
     @TableField("maintenance_period_end")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime maintenancePeriodEnd;
 
     @Schema(description = "Voucher no.")
@@ -143,6 +148,7 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Voucher Used Date")
     @TableField("Voucher_used_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime voucherUsedDate;
 
     @Schema(description = "Only apply for paging in list api")

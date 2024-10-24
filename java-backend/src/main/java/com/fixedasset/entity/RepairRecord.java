@@ -3,6 +3,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -36,14 +37,17 @@ public class RepairRecord {
 
     @Schema(description = "Maintenance date")
     @TableField("maintenance_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime maintenanceDate;
 
     @Schema(description = "Finish maintenance date")
     @TableField("maintenance_finish_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime maintenanceFinishDate;
 
     @Schema(description = "Repair invoice date")
     @TableField("repair_invoice_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime repairInvoiceDate;
 
     @Schema(description = "Repair nO.")
@@ -61,10 +65,12 @@ public class RepairRecord {
 
     @Schema(description = "Created date time,Only apply for response")
     @TableField("created")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime created;
 
     @Schema(description = "Updated date time, Only apply for response")
     @TableField("updated")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime updated;
 
     @Schema(description = "Active status, 1 = Active, 0 = Void, Only apply for response")
