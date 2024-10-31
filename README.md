@@ -45,6 +45,12 @@ Example Image<br />
 <img src="/image/fixedasset-4.png"><br />
 
 
+Online Demo<br />
+------------
+https://felix-fixedasset.web.app/login<br />
+Username: Demo<br />
+Password: 888888<br />
+
 How to run this project<br />
 ------------
 Backend using port 8370<br />
