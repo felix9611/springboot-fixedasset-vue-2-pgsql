@@ -161,11 +161,11 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Only apply for paging in list api, Buy Date Range To")
     @TableField(exist = false)
-    private String buyDateTo;
+    private OffsetDateTime buyDateTo;
 
     @Schema(description = "Only apply for paging in list api, Buy Date Range From")
     @TableField(exist = false)
-    private String buyDateFrom;
+    private OffsetDateTime buyDateFrom;
 
     @Schema(description = "Only apply for response, files list")
     @TableField(exist = false)
