@@ -8,8 +8,10 @@ Axios.defaults.baseURL = process.env.VUE_APP_BASE_API
 const request = Axios.create({
     timeout: 5000,
     headers: {
-        'Content-Type': "application/json; charset=utf-8"
-    }
+        'Content-Type': "application/json; charset=utf-8",
+        'Access-Control-Allow-Origin': '*'
+    },
+    withCredentials: false
 
 })
 
