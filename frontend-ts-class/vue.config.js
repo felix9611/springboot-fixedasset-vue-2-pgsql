@@ -16,7 +16,7 @@ module.exports = {
         proxy: {
             [process.env.VUE_APP_BASE_API]: {
                 //后端服务地址和端口
-                target: 'https://fixedasset-prod-felix9611-d3fc9544.koyeb.app',
+                target: 'http://localhost:8370',
                 //是否跨域
                 changeOrigin: true,
                 pathRewrite: {
