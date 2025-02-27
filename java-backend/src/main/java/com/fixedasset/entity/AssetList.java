@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -35,8 +36,8 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Buy Date")
     @TableField("buy_date")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private OffsetDateTime buyDate;
+  //  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Instant buyDate;
 
     @Schema(description = "Description")
     @TableField("description")
@@ -64,8 +65,8 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Invoice Date")
     @TableField("invoice_date")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private OffsetDateTime invoiceDate;
+ //   @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Instant invoiceDate;
 
    
     @Schema(description = "Invoice Remark")
@@ -134,13 +135,13 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Maintenance Period Range Start")
     @TableField("maintenance_period_start")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private OffsetDateTime maintenancePeriodStart;
+   // @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Instant maintenancePeriodStart;
 
     @Schema(description = "Maintenance Period Range End")
     @TableField("maintenance_period_end")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private OffsetDateTime maintenancePeriodEnd;
+  //  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Instant maintenancePeriodEnd;
 
     @Schema(description = "Voucher no.")
     @TableField("voucher_no")
@@ -148,8 +149,8 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Voucher Used Date")
     @TableField("Voucher_used_date")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private OffsetDateTime voucherUsedDate;
+  //  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Instant voucherUsedDate;
 
     @Schema(description = "Only apply for paging in list api")
     @TableField(exist = false)
@@ -161,11 +162,11 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "Only apply for paging in list api, Buy Date Range To")
     @TableField(exist = false)
-    private OffsetDateTime buyDateTo;
+    private Instant buyDateTo;
 
     @Schema(description = "Only apply for paging in list api, Buy Date Range From")
     @TableField(exist = false)
-    private OffsetDateTime buyDateFrom;
+    private Instant buyDateFrom;
 
     @Schema(description = "Only apply for response, files list")
     @TableField(exist = false)

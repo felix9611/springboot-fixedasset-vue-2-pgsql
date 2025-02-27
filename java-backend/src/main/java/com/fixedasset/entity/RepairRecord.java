@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 import javax.persistence.Transient;
+
+import java.time.Instant;
 import java.time.OffsetDateTime;
 
 @Data
@@ -38,17 +40,17 @@ public class RepairRecord {
     @Schema(description = "Maintenance date")
     @TableField("maintenance_date")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private OffsetDateTime maintenanceDate;
+    private Instant maintenanceDate;
 
     @Schema(description = "Finish maintenance date")
     @TableField("maintenance_finish_date")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private OffsetDateTime maintenanceFinishDate;
+    private Instant maintenanceFinishDate;
 
     @Schema(description = "Repair invoice date")
     @TableField("repair_invoice_date")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private OffsetDateTime repairInvoiceDate;
+    private Instant repairInvoiceDate;
 
     @Schema(description = "Repair nO.")
     @TableField("repair_invoice_no")
@@ -95,9 +97,9 @@ public class RepairRecord {
 
     @Schema(description = "Repair Invoice Date start from ,Only apply to filter for list api")
     @TableField(exist = false)
-    private OffsetDateTime repairInvoiceDateTo;
+    private Instant repairInvoiceDateTo;
 
     @Schema(description = "Repair Invoice Date end to ,Only apply to filter for list api")
     @TableField(exist = false)
-    private OffsetDateTime repairInvoiceDateFrom;
+    private Instant repairInvoiceDateFrom;
 }

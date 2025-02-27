@@ -124,11 +124,14 @@
     <select id="getAssetCostYearMonthFind" resultType="com.fixedasset.dto.AssetCostYearMonthDto"> 
         SELECT 
             sum(cost) as costs ,
-            CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) as yearMonth 
+            CONCAT(date_part('year', asset_list.buy_date), '-',  TO_CHAR(asset_list.buy_date, 'Month')) AS yearMonth,
+            date_part('year', asset_list.buy_date), 
+			date_part('month', asset_list.buy_date) 
         FROM asset_list 
              ${ew.customSqlSegment} 
-        GROUP BY CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date)) 
-        ORDER BY CONCAT(date_part('YEAR', asset_list.buy_date), '-', date_part('MONTH', asset_list.buy_date));
+        GROUP BY CONCAT(date_part('year', asset_list.buy_date), '-',  TO_CHAR(asset_list.buy_date, 'Month')), date_part('year', asset_list.buy_date), 
+			date_part('month', asset_list.buy_date)
+        ORDER BY date_part('year', asset_list.buy_date),  date_part('month', asset_list.buy_date);
     </select>
 
     <select id="getAssetYearQtyPlaceFind" resultType="com.fixedasset.dto.AssetYearQtyPlaceDto"> 
