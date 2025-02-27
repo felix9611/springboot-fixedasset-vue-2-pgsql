@@ -3,6 +3,7 @@ package com.fixedasset.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
@@ -29,7 +30,7 @@ public class AssetListUploadDataDto {
     @Transient private String unit;
 
     @Schema(description = "Buy Date")
-    @Transient private OffsetDateTime buyDate;
+    @Transient private  Instant  buyDate;
 
     @Schema(description = "Description")
     @Transient private String description;
@@ -50,7 +51,7 @@ public class AssetListUploadDataDto {
     @Transient private String invoiceNo;
 
     @Schema(description = "Invoice Date")
-    @Transient private OffsetDateTime invoiceDate;
+    @Transient private  Instant  invoiceDate;
 
     @Schema(description = "Invoice Remark")
     @Transient private String invoiceRemark;
@@ -128,16 +129,16 @@ public class AssetListUploadDataDto {
     @Transient private String chequeNo;
 
     @Schema(description = "Maintenance Period Range Start")
-    @Transient private OffsetDateTime maintenancePeriodStart;
+    @Transient private  Instant  maintenancePeriodStart;
 
     @Schema(description = "Maintenance Period Range End")
-    @Transient private OffsetDateTime maintenancePeriodEnd;
+    @Transient private  Instant  maintenancePeriodEnd;
 
     @Schema(description = "Voucher no.")
     @Transient private String voucherNo;
 
     @Schema(description = "Voucher Used Date")
-    @Transient private OffsetDateTime voucherUsedDate;
+    @Transient private  Instant  voucherUsedDate;
 
     @Schema(description = "Remark")
     @Transient private String remark;

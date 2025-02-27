@@ -49,7 +49,7 @@ public class SysMenu extends BaseEntity {
      */
     @Schema(description = "0：main   1：item   2：button")
     @NotNull(message = "Menu type cannot be empty")
-    private Integer type;
+    private int type;
 
     /**
      * Icon
@@ -62,7 +62,7 @@ public class SysMenu extends BaseEntity {
      */
     @Schema(description = "The sorting order number")
     @TableField("order_num")
-    private Integer orderNum;
+    private int orderNum;
 
 
     @Schema(description = "The index, Only apply for response")

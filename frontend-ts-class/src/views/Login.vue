@@ -1,7 +1,7 @@
 <template>
     <div class="bg-cover w-screen min-h-screen text-white bg-[url('assets/img/background3.jpg')]">
-        <div class="] grid md:grid-cols-1 xl:grid-cols-3 gap-3 p-10">
-            <div class="xl:col-span-2 xl:my-[15rem]">
+        <div class="grid md:grid-cols-3 gap-3 p-10">
+            <div class="md:grid-cols-2 lg:my-[15rem]">
                 <div>
                     <div
                         class="text-center font-bold text-[3rem] md:text-[3rem] lg:text-[3.5rem] xl:text-[4rem] xs:[text-shadow:_0_15px_30px_rgb(99_102_241_/_0.8)]  [text-shadow:_0_8px_10px_rgb(99_102_241_/_0.8)] hover:[text-shadow:_0_10px_15px_#b5edff]"
@@ -15,7 +15,7 @@
                     </div>
                 </div>
             </div>
-            <div class="xl:col-span-1 xl:my-[10.5rem]">
+            <div class="my-[10.5rem]">
                 <div class="bg-white bg-opacity-80 p-6 rounded-x rounded-3xl shadow-lg">
                     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="grid grid-cols-1 gap-2">
                         <el-form-item prop="username" class="w-100">
