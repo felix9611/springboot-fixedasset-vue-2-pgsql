@@ -304,7 +304,7 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
                 assetList.setTaxCountryCode(assetListUploadDataDto.getTaxCountryCode());
                 assetList.setTaxCode(assetListUploadDataDto.getTaxCode());
                 assetList.setTaxRate(assetListUploadDataDto.getTaxRate());
-                assetList.setIncludeTax(assetListUploadDataDto.getIncludeTax() == "Yes" ? true : false);
+                assetList.setIncludeTax(assetListUploadDataDto.getIncludeTax() == "Yes" ? 1 : 0);
                 assetList.setAfterBeforeTax(assetListUploadDataDto.getAfterBeforeTax());
                 assetList.setAccountCode(assetListUploadDataDto.getAccountCode());
                 assetList.setAccountName(assetListUploadDataDto.getAccountName());

@@ -107,7 +107,7 @@ public class AssetList extends BaseEntity{
 
     @Schema(description = "1 = Cost plus tax, 0 = Cost without tax")
     @TableField("include_tax")
-    private Boolean includeTax;
+    private int includeTax;
 
     @Schema(description = "After or before tax")
     @TableField("after_before_tax")
