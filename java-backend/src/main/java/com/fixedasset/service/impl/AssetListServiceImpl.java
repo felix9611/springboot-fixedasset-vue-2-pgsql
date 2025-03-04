@@ -74,7 +74,7 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         return this.assetListMapper.newReport(queryWrapper);
     }
 
-    public int sumTotal(AssetList assetList) {
+    public AssetCostYearMonthDto sumTotal(AssetList assetList) {
         LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
 
         if (!StringUtils.isBlank(assetList.getAssetCode())){
@@ -94,6 +94,17 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         if (!(assetList.getDeptId() == 0)) {
             queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
         }
+
+        if (!assetList.getTypeIds().isEmpty()) {
+            queryWrapper.in(AssetList::getTypeId, assetList.getTypeIds());
+        }
+        if (!assetList.getPlaceIds().isEmpty()) {
+            queryWrapper.in(AssetList::getPlaceId, assetList.getPlaceIds());
+        }
+        if (!assetList.getDeptIds().isEmpty()) {
+            queryWrapper.in(AssetList::getDeptId, assetList.getDeptIds());
+        }
+
         queryWrapper.eq(AssetList::getSponsor, 0);
         queryWrapper.isNull(AssetList::getSponsorName);
         queryWrapper.eq(AssetList::getStatu, 1);
@@ -101,7 +112,7 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         return assetListMapper.sumCost(queryWrapper);
     }
 
-    public int sumCostWithSponsor(AssetList assetList) {
+    public AssetCostYearMonthDto sumCostWithSponsor(AssetList assetList) {
         LambdaQueryWrapper<AssetList> queryWrapper = Wrappers.lambdaQuery();
 
         if (!StringUtils.isBlank(assetList.getAssetCode())){
@@ -120,6 +131,16 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         }
         if (!(assetList.getDeptId() == 0)) {
             queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
+        }
+
+        if (!assetList.getTypeIds().isEmpty()) {
+            queryWrapper.in(AssetList::getTypeId, assetList.getTypeIds());
+        }
+        if (!assetList.getPlaceIds().isEmpty()) {
+            queryWrapper.in(AssetList::getPlaceId, assetList.getPlaceIds());
+        }
+        if (!assetList.getDeptIds().isEmpty()) {
+            queryWrapper.in(AssetList::getDeptId, assetList.getDeptIds());
         }
 
         queryWrapper.eq(AssetList::getStatu, 1);
@@ -498,6 +519,13 @@ public class AssetListServiceImpl extends ServiceImpl<AssetListMapper, AssetList
         }
         if (!(assetList.getDeptId() == 0)) {
             queryWrapper.eq(AssetList::getDeptId, assetList.getDeptId());
+        }
+
+        if (!assetList.getTypeIds().isEmpty()) {
+            queryWrapper.in(AssetList::getTypeId, assetList.getTypeIds());
+        }
+        if (!assetList.getDeptIds().isEmpty()) {
+            queryWrapper.in(AssetList::getDeptId, assetList.getDeptIds());
         }
 
         return queryWrapper;
