@@ -2,7 +2,8 @@ package com.fixedasset.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fixedasset.utils.CustomOffsetDateTimeDeserializer;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -18,9 +19,11 @@ public class BaseEntity implements Serializable {
     private Long id;
 
     @Schema(description = "Created date time,Only apply for response")
+    @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
     private OffsetDateTime created;
 
     @Schema(description = "Updated date time, Only apply for response")
+    @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
     private OffsetDateTime updated;
 
     @Schema(description = "Active status, 1 = Active, 0 = Void, Only apply for response")
